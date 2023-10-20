@@ -16,6 +16,7 @@ export default {
         "gray-light": "#f6f7f8",
         ambient: "#f6f7f8",
         primary: "#ffdd2d",
+        "primary-dark": "#fcc521",
         "gray-normal": "#e4ebf3"
       }
     },
