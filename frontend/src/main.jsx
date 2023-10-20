@@ -9,6 +9,7 @@ import {
 import {ErrorPage} from "./routes/ErrorPage.jsx";
 import {Registration} from "./routes/Registration.jsx";
 import {Authorization} from "./routes/Authorization.jsx";
+import {Profile} from "./routes/Profile.jsx";
 
 const router = createBrowserRouter([
     {
@@ -24,6 +25,11 @@ const router = createBrowserRouter([
     {
         path: "/authorization",
         element: <Authorization/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/profile",
+        element: <Profile/>,
         errorElement: <ErrorPage/>
     }
 ]);
