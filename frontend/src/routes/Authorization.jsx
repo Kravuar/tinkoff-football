@@ -4,7 +4,7 @@ import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
 import {Input} from "../components/Input.jsx";
 import {ChevronDoubleRightIcon} from "@heroicons/react/24/outline/index.js";
-import {Button} from "../components/Button.jsx";
+import {PrimaryButton} from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 
 export const Authorization = () => {
@@ -28,14 +28,14 @@ export const Authorization = () => {
                             <Input type={'password'}
                                    placeholder={'Пароль'} {...register('password', {required: true})}/>
 
-                            <Button>
+                            <PrimaryButton>
                                 <span className={'text-lg font-medium'}>
                                     Авторизоваться
                                 </span>
                                 <span>
                                     <ChevronDoubleRightIcon class="h-6 w-6 text-gray-500 stroke-[3]"/>
                                 </span>
-                            </Button>
+                            </PrimaryButton>
                         </form>
                         <div className={'text-sm text-gray-400 text-center mt-3'}>
                             <Link to={'/registration'}>
