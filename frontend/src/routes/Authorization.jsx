@@ -1,13 +1,13 @@
+import {useForm} from "react-hook-form";
 import {App} from "../components/App.jsx";
 import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
-import {ChevronDoubleRightIcon} from "@heroicons/react/24/outline";
 import {Input} from "../components/Input.jsx";
-import {useForm} from "react-hook-form";
+import {ChevronDoubleRightIcon} from "@heroicons/react/24/outline/index.js";
 import {Button} from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 
-export const Registration = () => {
+export const Authorization = () => {
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
 
     const onSubmit = (data) => {
@@ -22,17 +22,15 @@ export const Registration = () => {
                     <div className={'p-8 rounded-3xl bg-white shadow-md'}>
                         <form className={'flex flex-col gap-8'} onSubmit={handleSubmit(onSubmit)}>
                             <h1 className={'font-bold text-3xl text-center'}>
-                                Регистрация
+                                Авторизация
                             </h1>
                             <Input type={'text'} placeholder={'Логин'} {...register('login', {required: true})}/>
                             <Input type={'password'}
                                    placeholder={'Пароль'} {...register('password', {required: true})}/>
-                            <Input type={'password'}
-                                   placeholder={'Повторите пароль'} {...register('password_confirmation', {required: true})}/>
 
                             <Button>
                                 <span className={'text-lg font-medium'}>
-                                    Зарегистрироваться
+                                    Авторизоваться
                                 </span>
                                 <span>
                                     <ChevronDoubleRightIcon class="h-6 w-6 text-gray-500 stroke-[3]"/>
@@ -40,9 +38,9 @@ export const Registration = () => {
                             </Button>
                         </form>
                         <div className={'text-sm text-gray-400 text-center mt-3'}>
-                                <Link to={'/authorization'}>
-                                    Уже зарегистрированы?
-                                </Link>
+                            <Link to={'/registration'}>
+                                Не зарегистрированы?
+                            </Link>
                         </div>
                     </div>
                 </div>

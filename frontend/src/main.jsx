@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import {ErrorPage} from "./routes/ErrorPage.jsx";
 import {Registration} from "./routes/Registration.jsx";
+import {Authorization} from "./routes/Authorization.jsx";
 
 const router = createBrowserRouter([
     {
@@ -18,6 +19,11 @@ const router = createBrowserRouter([
     {
         path: "/registration",
         element: <Registration/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/authorization",
+        element: <Authorization/>,
         errorElement: <ErrorPage/>
     }
 ]);
