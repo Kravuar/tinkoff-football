@@ -9,6 +9,7 @@ import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.service.TournamentHandler;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Tournament;
+import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.messaging.MessageHandler;

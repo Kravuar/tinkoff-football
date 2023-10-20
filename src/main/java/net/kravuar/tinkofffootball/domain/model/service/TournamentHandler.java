@@ -2,6 +2,7 @@ package net.kravuar.tinkofffootball.domain.model.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Tournament;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.MessageHandler;
@@ -24,7 +25,7 @@ public class TournamentHandler {
         eventChannel.unsubscribe(handler);
     }
 
-    public void publishEvent(GenericMessage<TournamentEvent> eventMessage) {
+    public void publishBracketEvent(GenericMessage<BracketEvent> eventMessage) {
         eventChannel.send(eventMessage);
     }
 }
