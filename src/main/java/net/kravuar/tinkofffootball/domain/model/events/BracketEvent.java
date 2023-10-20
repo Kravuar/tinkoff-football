@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-public abstract class BracketEvent extends TournamentEvent {
-    public BracketEvent(String eventType) {
-        super(eventType);
-    }
+@RequiredArgsConstructor
+public abstract class BracketEvent {
+    private final String eventType;
 }
 

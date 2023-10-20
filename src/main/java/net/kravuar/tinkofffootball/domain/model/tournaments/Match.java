@@ -19,19 +19,19 @@ public class Match {
     @Id
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     private Tournament tournament;
 
     @Column(nullable = false)
     private int bracketPosition;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Team team1;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Team team2;
 
-    private int team1Score;
-    private int team2Score;
+    private int team1Score = 0;
+    private int team2Score = 0;
 
     @Column(nullable = false)
     private int bestOf;
@@ -39,5 +39,12 @@ public class Match {
     private String prize;
 
     @Enumerated
-    private MatchStatus status;
+    private MatchStatus status = MatchStatus.PENDING;
+
+    public Match(Tournament tournament, int bracketPosition, int bestOf, String prize) {
+        this.tournament = tournament;
+        this.bracketPosition = bracketPosition;
+        this.prize = prize;
+        this.bestOf = bestOf;
+    }
 }
