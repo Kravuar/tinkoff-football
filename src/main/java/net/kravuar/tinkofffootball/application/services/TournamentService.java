@@ -8,16 +8,20 @@ import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
+import net.kravuar.tinkofffootball.domain.model.events.ScoreUpdateEvent;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
-import net.kravuar.tinkofffootball.domain.model.service.TournamentHandler;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Tournament;
 import net.kravuar.tinkofffootball.domain.model.tournaments.TournamentParticipant;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import net.kravuar.tinkofffootball.domain.model.util.ParticipantId;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.SubscribableChannel;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -29,7 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Service
 public class TournamentService {
-    private final Map<Long, TournamentHandler> activeTournaments = new ConcurrentHashMap<>();
+    private final Map<Long, SubscribableChannel> activeTournaments = new ConcurrentHashMap<>();
+    private final ApplicationEventPublisher publisher;
     private final TournamentRepo tournamentRepo;
     private final TournamentParticipantsRepo tournamentParticipantsRepo;
     private final TeamService teamService;
@@ -41,7 +46,7 @@ public class TournamentService {
             var tournament = activeTournaments.get(tournamentId);
             MessageHandler handler = message -> {
                 var gameEvent = (BracketEvent) message.getPayload();
-                var event = ServerSentEvent.<BracketEvent> builder()
+                var event = ServerSentEvent.<BracketEvent>builder()
                         .event(gameEvent.getEventType())
                         .data(gameEvent)
                         .build();
@@ -102,15 +107,33 @@ public class TournamentService {
         var team = teamService.findOrElseThrow(teamId);
         if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
             throw new IllegalArgumentException("Нельзя выйти из турнира. Вы не состоите в данной команде.");
-        if (tournamentStatus != Tournament.TournamentStatus.PENDING || tournamentStatus != Tournament.TournamentStatus.ACTIVE)
-            throw new IllegalArgumentException("Нельзя выйти из турнира.");
+
         var toDelete = new ParticipantId(tournament, team);
         if (tournamentParticipantsRepo.existsById(toDelete)) {
-            tournamentParticipantsRepo.deleteById(toDelete);
-            tournament.setParticipants(tournament.getParticipants() - 1);
-            tournamentRepo.save(tournament);
+            switch (tournamentStatus) {
+                case PENDING -> {
+                    tournamentParticipantsRepo.deleteById(toDelete);
+                    tournament.setParticipants(tournament.getParticipants() - 1);
+                    tournamentRepo.save(tournament);
+                }
+                case ACTIVE -> {
+                    var match = matchService.findActiveMatch(tournamentId, teamId);
+                    var winner = -1;
+                    if (team.getId() == match.getTeam1().getId())
+                        winner = 2;
+                    else if (team.getId() == match.getTeam2().getId())
+                        winner = 1;
+                    publisher.publishEvent(new ScoreUpdateEvent(
+                            match.getTeam1Score(),
+                            match.getTeam2Score(),
+                            match.getTournament().getId(),
+                            match.getId(),
+                            winner
+                    ));
+                }
+                default -> throw new IllegalArgumentException("Нельзя выйти из турнира.");
+            }
         }
-//        TODO: fire MatchFinishedEvent if tournament is active (auto-lose)
     }
 
     public void updateScore(Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
@@ -119,8 +142,18 @@ public class TournamentService {
             throw new AccessDeniedException("Вы не владелец турнира.");
         match.setTeam1Score(matchUpdate.getTeam1Score());
         match.setTeam2Score(matchUpdate.getTeam2Score());
-//        if (match.getTeam1Score() + match.getTeam2Score() == match.getBestOf())
-//              fire event MatchFinishedEvent
+        var winner = -1;
+        if (match.getTeam1Score() > match.getBestOf() / 2)
+            winner = 1;
+        else if (match.getTeam2Score() > match.getBestOf() / 2)
+            winner = 2;
+        publisher.publishEvent(new ScoreUpdateEvent(
+                match.getTeam1Score(),
+                match.getTeam2Score(),
+                match.getTournament().getId(),
+                matchId,
+                winner
+        ));
     }
 
     public void startTournament(Long tournamentId, UserInfo userInfo) {
@@ -133,20 +166,28 @@ public class TournamentService {
             throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
         }
         var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil(participants.size() / 2)).first());
-        for (var i = 0; i < participants.size(); i+=2) {
+        for (var i = 0; i < participants.size(); i += 2) {
             var match = matches.get(i / 2);
             match.setTeam1(participants.get(i).getTeam());
             match.setTeam1(participants.get(i + 1).getTeam());
         }
-//        if (matches.get(matches.size() - 1).getTeam2() == null) {
-//            fire event (auto-win)
-//        }
+        activeTournaments.put(tournamentId, MessageChannels.publishSubscribe().getObject());
 
-        activeTournaments.put(tournamentId, new TournamentHandler(tournament));
+        var lastMatch = matches.get(matches.size() - 1);
+        if (lastMatch.getTeam2() == null)
+            publisher.publishEvent(new ScoreUpdateEvent(
+                    0,
+                    0,
+                    tournamentId,
+                    lastMatch.getId(),
+                    1
+            ));
     }
 
-//    TODO: handle proper bracket movement (like if no opponent - advance)
-
-//    TODO: add handler for the ScoreUpdateEvent (check if match is finished, if so fire new MatchFinishedEvent)
-//    TODO: add handler for the MatchFinishedEvent (check if the tournament is finished)
+    @EventListener(ScoreUpdateEvent.class)
+    public void handleScoreUpdate(ScoreUpdateEvent event) {
+//        TODO: move next stage if finished
+//        var channel = activeTournaments.get(event.getTournamentId());
+//        channel.send(event);
+    }
 }

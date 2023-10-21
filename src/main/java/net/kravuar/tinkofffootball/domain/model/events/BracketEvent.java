@@ -1,11 +1,11 @@
 package net.kravuar.tinkofffootball.domain.model.events;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public abstract class BracketEvent {
-    private final String eventType;
+    private String eventType;
 }
 
