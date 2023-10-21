@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
 import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
+import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

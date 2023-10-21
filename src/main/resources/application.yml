@@ -1,3 +1,27 @@
 web:
   allowed-origins:
     - http://localhost:3000
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tinkoff
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        default_schema: tinkoff
+
+jwt-auth:
+  http:
+    unauthenticated-endpoints:
+      - "/auth/**"
+      - "/tournaments/list/**"
+      - "/tournaments/*/bracket/subscribe/*"
