@@ -30,7 +30,3 @@ logging:
     org:
       springframework:
         web: DEBUG
-
-springdoc:
-  swagger-ui:
-    path: "/swagger-ui/ui.html"

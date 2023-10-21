@@ -1,7 +1,6 @@
 package net.kravuar.tinkofffootball.domain.model.tournaments;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
