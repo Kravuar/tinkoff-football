@@ -2,7 +2,7 @@ import {App} from "../components/App.jsx";
 import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
 import {PlayIcon} from "@heroicons/react/24/outline/index.js";
-import {ArrowPathIcon, TrophyIcon} from "@heroicons/react/24/outline";
+import {ArrowPathIcon, CalendarDaysIcon, TrophyIcon} from "@heroicons/react/24/outline";
 import {PrimaryButton} from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 
@@ -59,7 +59,7 @@ const Table = () => {
                                 <td className="px-6 py-4">
                                     {
                                         {
-                                            opened: '',
+                                            opened: <CalendarDaysIcon className={"h-6 w-6 text-gray-500 stroke-2"}/>,
                                             active: <PlayIcon className={'h-6 w-6 text-green-500 stroke-2'}/>,
                                             finished: <TrophyIcon className={'h-6 w-6 text-primary stroke-2'}/>
                                         }[tournament.status]
