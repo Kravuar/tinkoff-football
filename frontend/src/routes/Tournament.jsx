@@ -59,7 +59,7 @@ export const Tournament = () => {
         <Header/>
         <Page>
             <div className={'mt-[100px] flex flex-col items-center w-full min-h-[85vh]'}>
-                <h1 className={'font-bold text-[42px]'}>
+                <h1 className={'font-bold text-[42px] text-center'}>
                     Турнир "{tournament.name}#{id}"
                 </h1>
                 <div className={'mt-4'}>
@@ -79,7 +79,7 @@ export const Tournament = () => {
 
                 <div className={'mt-12'}>
                     {/* принять участие */}
-                    <form className={'w-[360px] flex gap-1 items-center'} onSubmit={handleSubmit(onJoin)}>
+                    <form className={'md:w-[360px] flex gap-1 items-center'} onSubmit={handleSubmit(onJoin)}>
                         {/*  выбор команды  */}
                         <div className={'w-full'}>
                             <Controller rules={{required: true}} control={control} name={'team'}

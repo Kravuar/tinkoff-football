@@ -9,6 +9,8 @@ import soccer from "../assets/table_soccer_nobg.png";
 import soccer_gradient from "../assets/table_soccer_nobg_gradient.png";
 import soccer_shadow from "../assets/table_soccer_nobg_shadow.png";
 import soccer_nolegs from "../assets/table_soccer_nolegs.png";
+import soccer_cloud_high from "../assets/table_soccer_cloud_high.png"
+import soccer_cloud_gradient from "../assets/table_soccer_cloud_gradient.png"
 import {PrimaryButton} from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 
@@ -17,7 +19,7 @@ function Root() {
         <App>
             <Header/>
             <Page>
-                <div className={'flex flex-col items-center pb-[100px]'}>
+                <div className={'flex flex-col items-center'}>
                     <div className={'mt-20 flex flex-col items-center'}>
                         <h1 className="text-5xl font-bold text-center">
                             Турниры по настольному футболу
@@ -32,7 +34,7 @@ function Root() {
                         </PrimaryButton>
                     </Link>
                     <div className={' max-w-full h-auto overflow-hidden'}>
-                        <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top max-w-full h-auto'} src={soccer_nolegs} alt={''}/>
+                        <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top max-w-full h-auto'} src={soccer_cloud_high} alt={''}/>
                     </div>
                 </div>
             </Page>

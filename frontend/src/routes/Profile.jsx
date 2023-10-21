@@ -219,7 +219,7 @@ const Teams = () => {
 
     return (
         <div
-            className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+            className={'w-full mt-14 p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
             <div className={'flex flex-col gap-4'}>
                 <h1 className={'text-2xl font-semibold'}>
                     Ваши команды
@@ -283,7 +283,7 @@ export const Profile = () => {
         <App>
             <Header/>
             <Page>
-                <div className={'pt-[170px] pb-[300px] flex flex-col items-center w-full'}>
+                <div className={'pt-[100px] md:pt-[200px] flex flex-col items-center w-full'}>
 
                     <div className={'p-3'}>
                         <h1 className={'text-[44px] font-bold'}>
@@ -294,7 +294,7 @@ export const Profile = () => {
                     <Teams/>
 
                     <div
-                        className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+                        className={'w-full mt-14 p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
                         <div className={'flex flex-col gap-4'}>
                             <h1 className={'text-2xl font-semibold'}>
                                 Ваши турниры

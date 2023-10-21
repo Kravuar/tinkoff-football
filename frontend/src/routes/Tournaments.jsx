@@ -55,7 +55,7 @@ const Table = () => {
 
     return (
         <div
-            className={'mt-14 w-full p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+            className={'mt-14 w-full p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
             <div className={'flex justify-end gap-4'}>
                 {
                     data?.totalTournaments ? (
@@ -75,18 +75,18 @@ const Table = () => {
                 </div>
 
                 <div className={'flex items-center rounded-lg'}>
-                    <button className={'p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
+                    <button className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
                         <ChevronLeftIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
-                    <div className={'p-4 bg-gray-200 hover:bg-gray-300'}>
+                    <div className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300'}>
                         {page}
                     </div>
-                    <button className={'p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
+                    <button className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
                         <ChevronRightIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
                 </div>
                 <PrimaryButton onClick={onUpdate}>
-                    <ArrowPathIcon className="animate-spin h-6 w-6 text-gray-500 stroke-2"/>
+                    <ArrowPathIcon className="animate-spin h-4 md:h-6 w-4 md:w-6 text-gray-500 stroke-2"/>
                 </PrimaryButton>
             </div>
             <div className={'mt-4 flex flex-col gap-4'}>
@@ -166,7 +166,7 @@ export const Tournaments = () => {
         <App>
             <Header/>
             <Page>
-                <div className={'pt-[80px] pb-[150px] flex flex-col items-center'}>
+                <div className={'pt-[100px] md:pt-[200px] flex flex-col items-center'}>
 
                     <div className={'p-3'}>
                         <h1 className={'text-[44px] font-bold'}>
