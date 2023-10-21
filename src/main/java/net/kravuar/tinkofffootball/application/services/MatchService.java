@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchService {
     private final MatchRepo matchRepo;
+    private final TeamService teamService;
 
     public Match findOrElseThrow(Long id) {
         return matchRepo.findById(id).orElseThrow(
@@ -25,11 +26,25 @@ public class MatchService {
     }
 
     public Match findActiveMatch(Long tournamentId, Long teamId) {
-        return null;
-//        TODO: find
+        return matchRepo.findFirstByTournamentIdAndTeam1IdOrTeam2IdOrderByBracketPositionDesc(tournamentId, teamId, teamId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("match", "team", teamId)
+                );
     }
 
     public void advanceWinner(long tournamentId, int bracketPosition, long winner) {
-//        (bracketPosition - 1) / 2
+        var newBracketPosition = (bracketPosition - 1) / 2;
+        if (newBracketPosition < 0)
+            throw new IllegalArgumentException("Нельзя продвинуться дальше финала.");
+        var newMatch = matchRepo.findMatchByTournamentIdAndBracketPosition(tournamentId, bracketPosition)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("match", "bracketPosition", bracketPosition)
+                );
+        if (newMatch.getTeam1() == null)
+            newMatch.setTeam1(teamService.getReference(winner));
+        else if (newMatch.getTeam2() != null)
+            newMatch.setTeam2(teamService.getReference(winner));
+        else
+            throw new IllegalArgumentException("Матч уже сформирован.");
     }
 }
