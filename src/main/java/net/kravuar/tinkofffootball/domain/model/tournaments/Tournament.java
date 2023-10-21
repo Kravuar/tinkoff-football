@@ -61,11 +61,11 @@ public class Tournament {
     public Tournament(TournamentFormDTO tournamentForm) {
         this.title = tournamentForm.getTitle();
         this.startDate = tournamentForm.getStartDateTime();
-        this.maxParticipants = tournamentForm.getParticipants();
         var matchDTOs = tournamentForm.getMatches();
-        var rewardedMatches = matchDTOs.size();
-        this.matches = new HashSet<>(rewardedMatches);
-        for(var i = 0; i < rewardedMatches; i++) {
+        var totalMatches = matchDTOs.size();
+        this.maxParticipants = totalMatches + 1;
+        this.matches = new HashSet<>(totalMatches);
+        for(var i = 0; i < totalMatches; i++) {
             var matchDTO = matchDTOs.get(i);
             matches.add(new Match(
                     this,
@@ -74,6 +74,5 @@ public class Tournament {
                     matchDTO.getPrize()
             ));
         }
-//        for
     }
 }

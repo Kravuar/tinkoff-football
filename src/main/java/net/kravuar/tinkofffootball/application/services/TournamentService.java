@@ -1,6 +1,7 @@
 package net.kravuar.tinkofffootball.application.services;
 
 import lombok.RequiredArgsConstructor;
+import net.kravuar.tinkofffootball.application.repo.TournamentParticipantsRepo;
 import net.kravuar.tinkofffootball.application.repo.TournamentRepo;
 import net.kravuar.tinkofffootball.domain.model.dto.DetailedTournamentDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
@@ -11,7 +12,9 @@ import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundExcep
 import net.kravuar.tinkofffootball.domain.model.service.TournamentHandler;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Tournament;
+import net.kravuar.tinkofffootball.domain.model.tournaments.TournamentParticipant;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
+import net.kravuar.tinkofffootball.domain.model.util.ParticipantId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.messaging.MessageHandler;
@@ -27,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TournamentService {
     private final Map<String, TournamentHandler> activeTournaments = new ConcurrentHashMap<>();
     private final TournamentRepo tournamentRepo;
+    private final TournamentParticipantsRepo tournamentParticipantsRepo;
     private final TeamService teamService;
     private final UserService userService;
 
@@ -83,12 +87,20 @@ public class TournamentService {
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Комманда не сформирована.");
         }
         tournament.setParticipants(tournament.getParticipants() + 1);
-//        TODO: actually join tournament
+        tournamentParticipantsRepo.save(new TournamentParticipant(tournament, team));
 //        TODO: fire event to lifetime participants update
     }
 
     public void leaveTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
-//        TODO: check whether userInfo principal is the captain / owner of the tournament
+        var tournament = findOrElseThrow(tournamentId);
+        var tournamentStatus = tournament.getStatus();
+        if (tournamentStatus != Tournament.TournamentStatus.PENDING || tournamentStatus != Tournament.TournamentStatus.ACTIVE)
+            throw new IllegalArgumentException("Нельзя выйти из турнира.");
+        var toDelete = new ParticipantId(tournament, teamService.getReference(teamId));
+        if (tournamentParticipantsRepo.existsById(toDelete)) {
+            tournamentParticipantsRepo.deleteById(toDelete);
+            tournament.setParticipants(tournament.getParticipants() - 1);
+        }
 //        TODO: fire MatchFinishedEvent (auto-lose)
     }
 

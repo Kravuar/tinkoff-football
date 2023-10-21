@@ -9,11 +9,18 @@ import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+
 @RestController
 @RequestMapping("/api/teams")
 @RequiredArgsConstructor
 public class TeamController {
     private final TeamService teamService;
+
+    @GetMapping("/my")
+    public Collection<TeamInfoDTO> getMyTeams(@AuthenticationPrincipal UserInfo userInfo) {
+        return teamService.getAllTeams(userInfo.getId());
+    }
 
     @GetMapping("/{id}/info")
     public TeamInfoDTO getTeamInfo(@PathVariable Long id) {

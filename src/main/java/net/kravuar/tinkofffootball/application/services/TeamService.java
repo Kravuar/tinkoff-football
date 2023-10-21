@@ -10,6 +10,8 @@ import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+
 @Service
 @RequiredArgsConstructor
 public class TeamService {
@@ -20,6 +22,10 @@ public class TeamService {
         return teamRepo.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("team", "id", id)
         );
+    }
+
+    public Team getReference(Long id) {
+        return teamRepo.getReferenceById(id);
     }
 
     public void createTeam(TeamFormDTO teamForm, UserInfo userInfo) {
@@ -48,5 +54,10 @@ public class TeamService {
 
     public TeamInfoDTO getTeamInfo(Long id) {
         return new TeamInfoDTO(findOrElseThrow(id));
+    }
+
+    public Collection<TeamInfoDTO> getAllTeams(Long userId) {
+        return teamRepo.findAllByCaptainIdOrSecondPlayerId(userId, userId).stream()
+                .map(TeamInfoDTO::new).toList();
     }
 }

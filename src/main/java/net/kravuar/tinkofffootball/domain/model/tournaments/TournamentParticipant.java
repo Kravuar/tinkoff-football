@@ -23,4 +23,9 @@ public class TournamentParticipant {
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Team team;
+
+    public TournamentParticipant(Tournament tournament, Team team) {
+        this.tournament = tournament;
+        this.team = team;
+    }
 }
