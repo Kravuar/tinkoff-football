@@ -116,10 +116,9 @@ const Teams = () => {
     const {register, handleSubmit} = useForm()
     const {data: teams, isLoading, isError} = useQuery(
         ['teams'],
-        () => api.get('/teams/my'), {
-            initialData: []
-        }
+        async () => (await api.get('/teams/my')).data
     )
+    console.log(teams)
     const addTeamMutation = useMutation((data) => api.post('/teams/create', {
         name: data.name,
         secondPlayerId: data.user_id,
