@@ -22,6 +22,9 @@ public class UserController {
 
     @GetMapping("/info")
     public UserInfoDTO getUserInfo(@AuthenticationPrincipal UserInfo userInfo) {
+        System.out.println("Jopa");
+        System.out.println(userInfo.getId());
+        System.out.println(userInfo.getUsername());
         return userService.getUserInfo(userInfo.getId());
     }
 

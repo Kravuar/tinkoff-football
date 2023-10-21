@@ -13,12 +13,12 @@ public class CookieService {
     private final JWTProps jwtProps;
 
     public List<Cookie> getJWTCookies(String accessToken, String refreshToken) {
-        var refreshCookie = new Cookie(jwtProps.getAccessCookieName(), accessToken);
+        var refreshCookie = new Cookie(jwtProps.getAccessCookieName(), jwtProps.getTokenPrefix() + accessToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setMaxAge((int) jwtProps.getRefreshTokenExpiration());
         refreshCookie.setPath(jwtProps.getAccessCookiePath());
 
-        var accessCookie = new Cookie(jwtProps.getRefreshCookieName(), refreshToken);
+        var accessCookie = new Cookie(jwtProps.getRefreshCookieName(), jwtProps.getTokenPrefix() + refreshToken);
         accessCookie.setHttpOnly(true);
         accessCookie.setMaxAge((int) jwtProps.getAccessTokenExpiration());
         accessCookie.setPath(jwtProps.getRefreshCookiePath());
