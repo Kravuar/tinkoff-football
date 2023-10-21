@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.kravuar.tinkofffootball.domain.model.util.OddNumber;
 
 @Entity
 @Getter
@@ -12,12 +13,6 @@ import lombok.Setter;
 @Table(name="matches")
 @NoArgsConstructor
 public class Match {
-    public enum MatchStatus {
-        PENDING,
-        ACTIVE,
-        FINISHED
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,13 +36,10 @@ public class Match {
 
     @Column(nullable = false)
     @Min(3)
+    @OddNumber
     private int bestOf;
 
     private String prize;
-
-    @Enumerated
-    @Column(nullable = false)
-    private MatchStatus status = MatchStatus.PENDING;
 
     public Match(Tournament tournament, int bracketPosition, int bestOf, String prize) {
         this.tournament = tournament;

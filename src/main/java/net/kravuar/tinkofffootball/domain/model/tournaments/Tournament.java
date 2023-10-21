@@ -54,7 +54,7 @@ public class Tournament {
     @Column(nullable = false)
     private TournamentStatus status = TournamentStatus.PENDING;
 
-//    TODO: Add denormalized data like amount of participants, prize pool
+//    TODO: Add denormalized data like amount of participants (DONE), prize pool...
 
     @Column(nullable = false)
     private int participants = 0;

@@ -3,10 +3,7 @@ package net.kravuar.tinkofffootball.application.services;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.repo.TournamentParticipantsRepo;
 import net.kravuar.tinkofffootball.application.repo.TournamentRepo;
-import net.kravuar.tinkofffootball.domain.model.dto.DetailedTournamentDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
+import net.kravuar.tinkofffootball.domain.model.dto.*;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.events.ScoreUpdateEvent;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
@@ -191,5 +188,9 @@ public class TournamentService {
             matchService.advanceWinner(event.getTournamentId(), event.getBracketPosition(), event.getWinner());
         var channel = activeTournaments.get(event.getTournamentId());
         channel.send(new GenericMessage<>(event));
+    }
+
+    public BracketDTO getBracket(Long tournamentId) {
+        return new BracketDTO(findOrElseThrow(tournamentId));
     }
 }

@@ -3,6 +3,7 @@ package net.kravuar.tinkofffootball.application.web;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
+import net.kravuar.tinkofffootball.domain.model.dto.BracketDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
@@ -17,6 +18,11 @@ import reactor.core.publisher.Flux;
 public class BracketController {
     private final TournamentService tournamentService;
 
+    @GetMapping("/{tournamentId}/bracket")
+    public BracketDTO getBracket(@PathVariable Long tournamentId) {
+        return tournamentService.getBracket(tournamentId);
+    }
+
     /**
      * SSE Подписка на обновления сетки.
      *
@@ -27,6 +33,7 @@ public class BracketController {
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long tournamentId) {
         return tournamentService.subscribeToBracketUpdates(tournamentId);
     }
+
 
     /**
      * Обновления счёта матча.
