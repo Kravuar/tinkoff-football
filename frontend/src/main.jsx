@@ -15,6 +15,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {Tournaments} from "./routes/Tournaments.jsx";
 import {TournamentGrid} from "./routes/TournamentGrid.jsx";
 import {Tournament} from "./routes/Tournament.jsx";
+import {TournamentCreate} from "./routes/TournamentCreate.jsx";
 
 
 const queryClient = new QueryClient({
@@ -62,6 +63,11 @@ const router = createBrowserRouter([
     {
         path: "/tournaments/:id/grid",
         element: <TournamentGrid/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/tournaments-create",
+        element: <TournamentCreate/>,
         errorElement: <ErrorPage/>
     }
 ]);
