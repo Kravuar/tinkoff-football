@@ -8,10 +8,7 @@ import net.kravuar.tinkofffootball.application.services.AuthService;
 import net.kravuar.tinkofffootball.application.services.CookieService;
 import net.kravuar.tinkofffootball.domain.model.dto.SignInFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.SignUpFormDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,11 +18,8 @@ public class AuthController {
     private final CookieService cookieService;
 
     @PostMapping("/signUp")
-    public void signUp(@Valid SignUpFormDTO signUpForm, HttpServletResponse response) {
-        System.out.println("signup");
+    public void signUp(@RequestBody @Valid SignUpFormDTO signUpForm, HttpServletResponse response) {
         var jwts = authService.signUp(signUpForm);
-        System.out.println("done");
-        System.out.println(jwts.get(0));
         cookieService.getJWTCookies(jwts.get(0), jwts.get(1)).forEach(response::addCookie);
     }
 
@@ -36,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/signIn")
-    public void signIn(@Valid SignInFormDTO signInForm, HttpServletResponse response) {
+    public void signIn(@RequestBody @Valid SignInFormDTO signInForm, HttpServletResponse response) {
         var jwts = authService.singIn(signInForm);
         cookieService.getJWTCookies(jwts.get(0), jwts.get(1)).forEach(response::addCookie);
     }

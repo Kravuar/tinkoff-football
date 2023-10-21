@@ -26,11 +26,11 @@ public class BracketController {
     }
 
     @PostMapping("/updateScore")
-    public void updateScore(@PathVariable Long id, @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
+    public void updateScore(@PathVariable Long id, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.updateScore(id, matchUpdate, userInfo);
     }
 
-    @PostMapping("/disqualifyTeam/{teamId}")
+    @PutMapping("/disqualifyTeam/{teamId}")
     public void disqualifyTeam(@PathVariable Long id, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.leaveTournament(id, teamId, userInfo);
     }
