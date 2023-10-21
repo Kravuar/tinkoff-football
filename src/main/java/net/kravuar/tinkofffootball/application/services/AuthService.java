@@ -7,6 +7,7 @@ import net.kravuar.tinkofffootball.domain.model.dto.SignInFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.SignUpFormDTO;
 import net.kravuar.tinkofffootball.domain.model.user.User;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
+import net.kravuar.tinkofffootball.domain.model.util.LoggedUser;
 import net.kravuar.tinkofffootball.domain.security.JWTExtractor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,32 +25,32 @@ public class AuthService {
     private final JWTProps jwtProps;
     private final JWTExtractor jwtExtractor;
 
-    public List<String> signUp(SignUpFormDTO signUpForm) {
+    public LoggedUser signUp(SignUpFormDTO signUpForm) {
         var user = new User();
         user.setUsername(signUpForm.getUsername());
         user.setPassword(passwordEncoder.encode(signUpForm.getPassword()));
 
         user = userService.signUp(user);
 
-        return getTokens(new UserInfo(user.getId(), user.getUsername()));
+        return getLoggedUser(new UserInfo(user.getId(), user.getUsername()));
     }
 
-    public List<String> singIn(SignInFormDTO signInForm) {
+    public LoggedUser singIn(SignInFormDTO signInForm) {
         var user = userService.findOrElseThrow(signInForm.getUsername());
         if (!passwordEncoder.matches(signInForm.getPassword(), user.getPassword()))
             throw new BadCredentialsException("invalid-password");
 
-        return getTokens(new UserInfo(user.getId(), signInForm.getUsername()));
+        return getLoggedUser(new UserInfo(user.getId(), signInForm.getUsername()));
     }
 
-    public List<String> refresh(HttpServletRequest request) {
+    public LoggedUser refresh(HttpServletRequest request) {
         var refreshToken = jwtExtractor.extract(request, jwtProps.getRefreshCookieName());
         var decodedJWT = jwtUtils.decode(refreshToken);
 
-        return getTokens(new UserInfo(decodedJWT.getClaim("id").asLong(), decodedJWT.getSubject()));
+        return getLoggedUser(new UserInfo(decodedJWT.getClaim("id").asLong(), decodedJWT.getSubject()));
     }
 
-    private List<String> getTokens(UserInfo userInfo) {
+    private LoggedUser getLoggedUser(UserInfo userInfo) {
         var accessToken = jwtUtils.sign(
                 jwtUtils.getJWTBuilder(
                         userInfo.getUsername(),
@@ -65,6 +66,6 @@ public class AuthService {
                 ).withClaim("id", userInfo.getId())
         );
 
-        return List.of(accessToken, refreshToken);
+        return new LoggedUser(accessToken, refreshToken, userInfo);
     }
 }

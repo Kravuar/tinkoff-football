@@ -17,19 +17,34 @@ import reactor.core.publisher.Flux;
 public class BracketController {
     private final TournamentService tournamentService;
 
-    /*
-     * Events like participants score update, team movement across the bracket
-     * */
+    /**
+     * SSE Подписка на обновления сетки.
+     *
+     * @param id id турнира.
+     * @return Поток SSE.
+     */
     @GetMapping("/subscribe")
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long id) {
         return tournamentService.subscribeToBracketUpdates(id);
     }
 
-    @PostMapping("/updateScore")
-    public void updateScore(@PathVariable Long id, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
-        tournamentService.updateScore(id, matchUpdate, userInfo);
+    /**
+     * Обновления счёта матча.
+     *
+     * @param id id турнира.
+     * @param matchId номер матча (внутри сетки).
+     */
+    @PostMapping("/updateScore/{matchId}")
+    public void updateScore(@PathVariable Long id, @PathVariable Long matchId, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.updateScore(id, matchId, matchUpdate, userInfo);
     }
 
+    /**
+     * Дисквалификация команды.
+     *
+     * @param id id турнира.
+     * @param teamId id команды.
+     */
     @PutMapping("/disqualifyTeam/{teamId}")
     public void disqualifyTeam(@PathVariable Long id, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.leaveTournament(id, teamId, userInfo);
