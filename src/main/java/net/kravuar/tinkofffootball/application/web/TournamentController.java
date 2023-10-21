@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
+import net.kravuar.tinkofffootball.domain.model.dto.DetailedTournamentDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TournamentController {
     private final TournamentService tournamentService;
+
+    @GetMapping("/{id}")
+    public DetailedTournamentDTO getTournamentInfo(@PathVariable Long id) {
+        return tournamentService.getTournamentDetailed(id);
+    }
 
     @GetMapping("/list/{pageSize}/{page}")
     public TournamentListPageDTO getTournamentList(@PathVariable @Min(1) int pageSize, @PathVariable @Min(0) int page) {

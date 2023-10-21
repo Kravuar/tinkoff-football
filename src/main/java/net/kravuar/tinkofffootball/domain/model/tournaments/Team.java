@@ -21,17 +21,19 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User captain;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User secondPlayer;
+
+    @Column(nullable = false)
+    private Boolean active = true;
 
     @Column(nullable = false)
     @Enumerated
     private SecondPlayerStatus secondPlayerStatus = SecondPlayerStatus.INVITED;
-
-    public Team(User captain) {
-        this.captain = captain;
-    }
 }

@@ -7,6 +7,7 @@ import net.kravuar.tinkofffootball.domain.model.dto.TeamInfoDTO;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,23 +24,26 @@ public class TeamService {
 
     public void createTeam(TeamFormDTO teamForm, UserInfo userInfo) {
         var captain = userService.findOrElseThrow(userInfo.getId());
-        teamRepo.save(new Team(captain));
-    }
+        var secondPlayer = userService.findOrElseThrow(teamForm.getSecondPlayerId());
 
-    public void inviteToTeam(Long teamId, Long usedId, UserInfo userInfo) {
-//        TODO: check if user is invited
+        var team = new Team();
+        team.setCaptain(captain);
+        team.setSecondPlayer(secondPlayer);
+        teamRepo.save(team);
     }
 
     public void joinTeam(Long teamId, UserInfo userInfo) {
-//        TODO: check if user is invited
-    }
-
-    public void leaveTeam(Long teamId, UserInfo userInfo) {
-//        TODO: check if user is in the team
+        var team = findOrElseThrow(teamId);
+        if (userInfo.getId() != team.getSecondPlayer().getId())
+            throw new AccessDeniedException("У вас нет приглашения в эту команду.");
+        team.setSecondPlayerStatus(Team.SecondPlayerStatus.JOINED);
     }
 
     public void deleteTeam(Long teamId, UserInfo userInfo) {
-//        TODO: check if user is in the captain
+        var team = findOrElseThrow(teamId);
+        if (userInfo.getId() != team.getCaptain().getId())
+            throw new AccessDeniedException("Это не ваша команда");
+        team.setActive(false);
     }
 
     public TeamInfoDTO getTeamInfo(Long id) {

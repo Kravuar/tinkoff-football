@@ -7,7 +7,9 @@ import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
+import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
 import net.kravuar.tinkofffootball.domain.model.service.TournamentHandler;
+import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Tournament;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TournamentService {
     private final Map<String, TournamentHandler> activeTournaments = new ConcurrentHashMap<>();
     private final TournamentRepo tournamentRepo;
+    private final TeamService teamService;
+    private final UserService userService;
 
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(Long tournamentId) {
         return Flux.create(sink -> {
@@ -45,6 +49,12 @@ public class TournamentService {
         }, FluxSink.OverflowStrategy.LATEST);
     }
 
+    public Tournament findOrElseThrow(long id) {
+        return tournamentRepo.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("tournament", "id", id)
+        );
+    }
+
     public TournamentListPageDTO getTournamentList(int pageSize, int page) {
         return new TournamentListPageDTO(
                 tournamentRepo.findAll(
@@ -54,7 +64,7 @@ public class TournamentService {
     }
 
     public DetailedTournamentDTO getTournamentDetailed(long id) {
-        return new DetailedTournamentDTO(tournamentRepo.findById(id));
+        return new DetailedTournamentDTO(findOrElseThrow(id));
     }
 
     public void createTournament(TournamentFormDTO tournamentForm) {
@@ -62,10 +72,18 @@ public class TournamentService {
         tournamentRepo.save(tournament);
     }
 
-    public void joinTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
-//        TODO: check whether team has 2 players and the userInfo principal is the captain
-//        TODO: check whether tournament isn't full or add check in functionality
-//        TODO: join the tournament
+    public synchronized void joinTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
+        var tournament = findOrElseThrow(tournamentId);
+        if (tournament.getStatus() != Tournament.TournamentStatus.PENDING)
+            throw new IllegalArgumentException("Нельзя присоединится к турниру.");
+        if (tournament.getParticipants() == tournament.getMaxParticipants())
+            throw new IllegalArgumentException("Нельзя присоединится к турниру. Мест нет.");
+        var team = teamService.findOrElseThrow(teamId);
+        if (team.getSecondPlayerStatus() == Team.SecondPlayerStatus.INVITED) {
+            throw new IllegalArgumentException("Нельзя присоединится к турниру. Комманда не сформирована.");
+        }
+        tournament.setParticipants(tournament.getParticipants() + 1);
+//        TODO: actually join tournament
 //        TODO: fire event to lifetime participants update
     }
 
@@ -74,7 +92,7 @@ public class TournamentService {
 //        TODO: fire MatchFinishedEvent (auto-lose)
     }
 
-    public void updateScore(Long tournamentId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
+    public void updateScore(Long tournamentId, Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
 //  TODO: Check whether userInfo principal is the owner of this tournament
 
     }
