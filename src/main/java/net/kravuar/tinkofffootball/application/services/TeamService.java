@@ -44,13 +44,22 @@ public class TeamService {
         if (userInfo.getId() != team.getSecondPlayer().getId())
             throw new AccessDeniedException("У вас нет приглашения в эту команду.");
         team.setSecondPlayerStatus(Team.SecondPlayerStatus.JOINED);
+        teamRepo.save(team);
+    }
+
+    public void disableTeam(Long teamId, UserInfo userInfo) {
+        var team = findOrElseThrow(teamId);
+        if (userInfo.getId() != team.getCaptain().getId() || userInfo.getId() != team.getSecondPlayer().getId())
+            throw new AccessDeniedException("Это не ваша команда");
+        team.setActive(false);
+        teamRepo.save(team);
     }
 
     public void deleteTeam(Long teamId, UserInfo userInfo) {
         var team = findOrElseThrow(teamId);
         if (userInfo.getId() != team.getCaptain().getId())
             throw new AccessDeniedException("Это не ваша команда");
-        team.setActive(false);
+        teamRepo.delete(team);
     }
 
     public TeamInfoDTO getTeamInfo(Long id) {

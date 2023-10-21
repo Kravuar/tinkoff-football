@@ -29,10 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 @Service
 public class TournamentService {
-    private final Map<String, TournamentHandler> activeTournaments = new ConcurrentHashMap<>();
+    private final Map<Long, TournamentHandler> activeTournaments = new ConcurrentHashMap<>();
     private final TournamentRepo tournamentRepo;
     private final TournamentParticipantsRepo tournamentParticipantsRepo;
     private final TeamService teamService;
+    private final MatchService matchService;
     private final UserService userService;
 
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(Long tournamentId) {
@@ -90,6 +91,7 @@ public class TournamentService {
         if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Вы не состоите в данной команде.");
         tournament.setParticipants(tournament.getParticipants() + 1);
+        tournamentRepo.save(tournament);
         tournamentParticipantsRepo.save(new TournamentParticipant(tournament, team));
 //        TODO: fire event to lifetime participants update
     }
@@ -106,24 +108,32 @@ public class TournamentService {
         if (tournamentParticipantsRepo.existsById(toDelete)) {
             tournamentParticipantsRepo.deleteById(toDelete);
             tournament.setParticipants(tournament.getParticipants() - 1);
+            tournamentRepo.save(tournament);
         }
 //        TODO: fire MatchFinishedEvent if tournament is active (auto-lose)
     }
 
-    public void updateScore(Long tournamentId, Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
+    public void updateScore(Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
+        var match = matchService.findOrElseThrow(matchId);
+        if (match.getTournament().getOwner().getId() != userInfo.getId())
+            throw new AccessDeniedException("Вы не владелец турнира.");
+        match.setTeam1Score(matchUpdate.getTeam1Score());
+        match.setTeam2Score(matchUpdate.getTeam2Score());
+//        if (match.getTeam1Score() + match.getTeam2Score() == match.getBestOf())
+//              fire event MatchFinishedEvent
+    }
+
+    public void startTournament(Long tournamentId, UserInfo userInfo) {
         var tournament = findOrElseThrow(tournamentId);
         if (tournament.getOwner().getId() != userInfo.getId())
             throw new AccessDeniedException("Вы не владелец турнира.");
-//        var match =
-//      handle match finish
-    }
 
-    public void startTournament(Long id, UserInfo userInfo) {
-        var tournament = findOrElseThrow(id);
-//        if (tournament)
-//        TODO: check if owner
+        var participants = tournamentParticipantsRepo.findAllByTournamentId(tournamentId);
+        if (participants.size() < 2) {
+            throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
+        }
+        activeTournaments.put(tournamentId, new TournamentHandler(tournament));
 //        TODO: form bracket
-//        TODO: add to active
     }
 
 //    TODO: handle proper bracket movement (like if no opponent - advance)

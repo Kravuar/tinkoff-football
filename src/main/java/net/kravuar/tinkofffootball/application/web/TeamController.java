@@ -37,8 +37,13 @@ public class TeamController {
         teamService.joinTeam(id, userInfo);
     }
 
-    @DeleteMapping(value = {"/{id}/leave/", "/{id}/declineInvite/"})
-    public void deleteTeam(@PathVariable Long id, @AuthenticationPrincipal UserInfo userInfo) {
+    @DeleteMapping("/{id}/leave/")
+    public void leaveTeam(@PathVariable Long id, @AuthenticationPrincipal UserInfo userInfo) {
+        teamService.disableTeam(id, userInfo);
+    }
+
+    @DeleteMapping("/{id}/declineInvite/")
+    public void declineInvite(@PathVariable Long id, @AuthenticationPrincipal UserInfo userInfo) {
         teamService.deleteTeam(id, userInfo);
     }
 }

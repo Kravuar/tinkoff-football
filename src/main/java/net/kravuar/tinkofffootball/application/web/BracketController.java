@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/api/tournaments/{id}/bracket")
+@RequestMapping("/api/tournaments")
 @RequiredArgsConstructor
 public class BracketController {
     private final TournamentService tournamentService;
@@ -20,33 +20,32 @@ public class BracketController {
     /**
      * SSE Подписка на обновления сетки.
      *
-     * @param id id турнира.
+     * @param tournamentId id турнира.
      * @return Поток SSE.
      */
-    @GetMapping("/subscribe")
-    public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long id) {
-        return tournamentService.subscribeToBracketUpdates(id);
+    @GetMapping("/{tournamentId}/bracket/subscribe")
+    public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long tournamentId) {
+        return tournamentService.subscribeToBracketUpdates(tournamentId);
     }
 
     /**
      * Обновления счёта матча.
      *
-     * @param id id турнира.
      * @param matchId id матча.
      */
     @PostMapping("/updateScore/{matchId}")
-    public void updateScore(@PathVariable Long id, @PathVariable Long matchId, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
-        tournamentService.updateScore(id, matchId, matchUpdate, userInfo);
+    public void updateScore(@PathVariable Long matchId, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.updateScore(matchId, matchUpdate, userInfo);
     }
 
     /**
      * Дисквалификация команды.
      *
-     * @param id id турнира.
+     * @param tournamentId id турнира.
      * @param teamId id команды.
      */
-    @PutMapping("/disqualifyTeam/{teamId}")
-    public void disqualifyTeam(@PathVariable Long id, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
-        tournamentService.leaveTournament(id, teamId, userInfo);
+    @PutMapping("/{tournamentId}/bracket/disqualifyTeam/{teamId}")
+    public void disqualifyTeam(@PathVariable Long tournamentId, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.leaveTournament(tournamentId, teamId, userInfo);
     }
 }
