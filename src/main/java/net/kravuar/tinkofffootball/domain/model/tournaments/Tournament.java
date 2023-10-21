@@ -3,6 +3,7 @@ package net.kravuar.tinkofffootball.domain.model.tournaments;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class Tournament {
 
     @Column(nullable = false)
     @NotBlank
-    @Min(4)
+    @Size(min=4)
     private String title;
 
     @OneToMany(mappedBy = "tournament")

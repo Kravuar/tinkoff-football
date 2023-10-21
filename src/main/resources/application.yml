@@ -6,6 +6,7 @@ web:
     - "/api/auth/**"
     - "/v3/api-docs/**"
     - "/swagger-ui/**"
+    - "/api/teams/{id}/info"
     - "/api/tournaments/list/**"
     - "/api/tournaments/*/bracket/subscribe/*"
 
