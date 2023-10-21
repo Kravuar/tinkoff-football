@@ -21,7 +21,7 @@ public class TeamController {
     }
 
     @PostMapping("/create")
-    public void createTeam(@Valid TeamFormDTO teamForm, @AuthenticationPrincipal UserInfo userInfo) {
+    public void createTeam(@RequestBody @Valid TeamFormDTO teamForm, @AuthenticationPrincipal UserInfo userInfo) {
         teamService.createTeam(teamForm, userInfo);
     }
 

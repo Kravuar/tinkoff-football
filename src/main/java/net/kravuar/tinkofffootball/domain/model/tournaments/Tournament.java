@@ -18,6 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class Tournament {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
