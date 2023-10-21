@@ -12,6 +12,8 @@ import {Authorization} from "./routes/Authorization.jsx";
 import {Profile} from "./routes/Profile.jsx";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {Tournaments} from "./routes/Tournaments.jsx";
+import {Tournament} from "./routes/Tournament.jsx";
 
 
 const queryClient = new QueryClient({
@@ -41,6 +43,16 @@ const router = createBrowserRouter([
     {
         path: "/profile",
         element: <Profile/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/tournaments",
+        element: <Tournaments/>,
+        errorElement: <ErrorPage/>
+    },
+    {
+        path: "/tournaments/:id",
+        element: <Tournament/>,
         errorElement: <ErrorPage/>
     }
 ]);
