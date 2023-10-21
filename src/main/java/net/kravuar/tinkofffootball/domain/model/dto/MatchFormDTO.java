@@ -7,6 +7,7 @@ import lombok.Data;
 public class MatchFormDTO {
     private String prize;
     @Min(1)
+//    @Mod2 == 1
     private int bestOf;
 
 //    TODO: Max duration

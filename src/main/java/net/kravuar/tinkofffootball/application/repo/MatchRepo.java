@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface MatchRepo extends PagingAndSortingRepository<Match, Long> ,JpaRepository<Match, Long> {
     List<Match> findAllByTournamentIdOrderByBracketPositionDesc(Long tournamentId, Pageable pageable);
+    List<Match> findFirstByTournamentIdAndTeam1IdOrTeam2IdOrderByBracketPositionDesc(Long tournamentId, Long team1Id, Long team2Id);
 }

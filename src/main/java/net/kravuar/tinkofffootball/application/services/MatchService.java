@@ -23,4 +23,9 @@ public class MatchService {
     public List<Match> getFirstMatches(Long tournamentId, Pageable pageable) {
         return matchRepo.findAllByTournamentIdOrderByBracketPositionDesc(tournamentId, pageable);
     }
+
+    public Match findActiveMatch(Long tournamentId, Long teamId) {
+        return null;
+//        TODO: find
+    }
 }
