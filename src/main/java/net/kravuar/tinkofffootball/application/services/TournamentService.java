@@ -22,6 +22,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.SubscribableChannel;
+import org.springframework.messaging.support.GenericMessage;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -118,16 +119,16 @@ public class TournamentService {
                 }
                 case ACTIVE -> {
                     var match = matchService.findActiveMatch(tournamentId, teamId);
-                    var winner = -1;
+                    long winner = -1;
                     if (team.getId() == match.getTeam1().getId())
-                        winner = 2;
+                        winner = match.getTeam2().getId();
                     else if (team.getId() == match.getTeam2().getId())
-                        winner = 1;
+                        winner = match.getTeam1().getId();
                     publisher.publishEvent(new ScoreUpdateEvent(
                             match.getTeam1Score(),
                             match.getTeam2Score(),
                             match.getTournament().getId(),
-                            match.getId(),
+                            match.getBracketPosition(),
                             winner
                     ));
                 }
@@ -142,16 +143,16 @@ public class TournamentService {
             throw new AccessDeniedException("Вы не владелец турнира.");
         match.setTeam1Score(matchUpdate.getTeam1Score());
         match.setTeam2Score(matchUpdate.getTeam2Score());
-        var winner = -1;
+        long winner = -1;
         if (match.getTeam1Score() > match.getBestOf() / 2)
-            winner = 1;
+            winner = match.getTeam1().getId();
         else if (match.getTeam2Score() > match.getBestOf() / 2)
-            winner = 2;
+            winner = match.getTeam2().getId();
         publisher.publishEvent(new ScoreUpdateEvent(
                 match.getTeam1Score(),
                 match.getTeam2Score(),
                 match.getTournament().getId(),
-                matchId,
+                match.getBracketPosition(),
                 winner
         ));
     }
@@ -179,15 +180,16 @@ public class TournamentService {
                     0,
                     0,
                     tournamentId,
-                    lastMatch.getId(),
-                    1
+                    lastMatch.getBracketPosition(),
+                    lastMatch.getTeam1().getId()
             ));
     }
 
     @EventListener(ScoreUpdateEvent.class)
     public void handleScoreUpdate(ScoreUpdateEvent event) {
-//        TODO: move next stage if finished
-//        var channel = activeTournaments.get(event.getTournamentId());
-//        channel.send(event);
+        if (event.getWinner() != -1)
+            matchService.advanceWinner(event.getTournamentId(), event.getBracketPosition(), event.getWinner());
+        var channel = activeTournaments.get(event.getTournamentId());
+        channel.send(new GenericMessage<>(event));
     }
 }

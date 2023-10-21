@@ -7,17 +7,17 @@ import lombok.Getter;
 public class ScoreUpdateEvent extends BracketEvent {
     @JsonIgnore
     private long tournamentId;
-    private long matchId;
+    private int bracketPosition;
     private int team1Score;
     private int team2Score;
-    private int winner;
+    private long winner;
 
-    public ScoreUpdateEvent(int team1Score, int team2Score, long tournamentId, long matchId, int winner) {
+    public ScoreUpdateEvent(int team1Score, int team2Score, long tournamentId, int bracketPosition, long winner) {
         super("score-update");
         this.team1Score = team1Score;
         this.team2Score = team2Score;
         this.tournamentId = tournamentId;
-        this.matchId = matchId;
+        this.bracketPosition = bracketPosition;
         this.winner = winner;
     }
 }

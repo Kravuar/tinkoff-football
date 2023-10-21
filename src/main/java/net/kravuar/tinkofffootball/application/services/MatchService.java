@@ -28,4 +28,8 @@ public class MatchService {
         return null;
 //        TODO: find
     }
+
+    public void advanceWinner(long tournamentId, int bracketPosition, long winner) {
+//        (bracketPosition - 1) / 2
+    }
 }

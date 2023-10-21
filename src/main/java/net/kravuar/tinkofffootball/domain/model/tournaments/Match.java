@@ -26,7 +26,7 @@ public class Match {
     private Tournament tournament;
 
     @Column(nullable = false)
-    @Min(1)
+    @Min(0)
     private int bracketPosition;
 
     @ManyToOne
@@ -40,7 +40,7 @@ public class Match {
     private int team2Score = 0;
 
     @Column(nullable = false)
-    @Min(1)
+    @Min(3)
     private int bestOf;
 
     private String prize;

@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class MatchFormDTO {
     private String prize;
-    @Min(1)
+    @Min(3)
 //    @Mod2 == 1
     private int bestOf;
 
