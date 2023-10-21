@@ -6,6 +6,7 @@ import football_gray from "../assets/football-gray.png";
 import gray_light2 from "../assets/gray-light2.png";
 import gray_light_cropped from "../assets/gray-light-cropped.png";
 import {PrimaryButton} from "../components/Button.jsx";
+import {Link} from "react-router-dom";
 
 function Root() {
     return (
@@ -21,9 +22,11 @@ function Root() {
                             Простой способ сохранить и приумножить сбережения. Понятные тарифы и удобное приложение
                         </h2>
                     </div>
-                    <PrimaryButton className={'mt-8'}>
-                        Попробовать бесплатно
-                    </PrimaryButton>
+                    <Link to={'/authorization'}>
+                        <PrimaryButton className={'mt-8'}>
+                            Попробовать бесплатно
+                        </PrimaryButton>
+                    </Link>
                     <div className={' max-w-full h-auto overflow-hidden'}>
                         <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top shadow-2xl max-w-full h-auto'} src={gray_light_cropped} alt={''}/>
                     </div>
