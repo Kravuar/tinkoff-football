@@ -2,6 +2,7 @@ package net.kravuar.tinkofffootball.domain.model.tournaments;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,11 +32,9 @@ public class Tournament {
     private Long id;
 
     @Column(nullable = false)
-    @NotBlank
-    @Size(min=4)
     private String title;
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     private Set<Match> matches = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -55,6 +54,9 @@ public class Tournament {
     private TournamentStatus status = TournamentStatus.PENDING;
 
 //    TODO: Add denormalized data like amount of participants (DONE), prize pool...
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
+    private Set<TournamentParticipant> tournamentParticipants;
 
     @Column(nullable = false)
     private int participants = 0;
