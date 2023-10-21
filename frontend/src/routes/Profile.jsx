@@ -6,6 +6,8 @@ import {Input} from "../components/Input.jsx";
 import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {useState} from "react";
 import {ActionsContainer, Modal, Title} from "../components/modal/Modal.jsx";
+import {useUser} from "../hooks/useUser.jsx";
+import {useForm} from "react-hook-form";
 
 
 /* состояния
@@ -143,14 +145,16 @@ const Table = () => {
                                 <td className={'px-6 py-4'}>
                                     {
                                         {
-                                            ok: <TeamModal onSubmit={leave} title={'Выход из команды'} subtitle={'Вы уверены, что хотите покинуть команду?'}>
-                                                <XMarkIcon class="h-6 w-6 stroke-2 text-red-500"/>
+                                            ok: <TeamModal onSubmit={leave} title={'Выход из команды'}
+                                                           subtitle={'Вы уверены, что хотите покинуть команду?'}>
+                                                <XMarkIcon className="h-6 w-6 stroke-2 text-red-500"/>
                                             </TeamModal>,
-                                            me_invited: <TeamModal onSubmit={cancel} title={'Отменить приглашение'} subtitle={'Вы уверены, что хотите отменить приглашение?'}>
-                                                <XMarkIcon class="h-6 w-6 stroke-2 text-red-500" />
+                                            me_invited: <TeamModal onSubmit={cancel} title={'Отменить приглашение'}
+                                                                   subtitle={'Вы уверены, что хотите отменить приглашение?'}>
+                                                <XMarkIcon className="h-6 w-6 stroke-2 text-red-500"/>
                                             </TeamModal>,
                                             i_invited: <button onClick={accept}>
-                                                <CheckIcon class="h-6 w-6 text-green-500" />
+                                                <CheckIcon className="h-6 w-6 text-green-500"/>
                                             </button>,
                                         } [team.status]
                                     }
@@ -166,27 +170,39 @@ const Table = () => {
 }
 
 export const Profile = () => {
+    const user = useUser(state => state.user)
+    const {register, handleSubmit, watch, formState: {errors}} = useForm();
+    const onSubmit = (data) => {
+        console.log(data)
+    }
     return (
         <App>
             <Header/>
             <Page>
-               <div className={'pt-[250px] pb-[300px]'}>
+                <div className={'pt-[170px] pb-[300px] flex flex-col items-center'}>
+
+                    <div className={'p-3'}>
+                        <h1 className={'text-[44px] font-bold'}>
+                            Здравствуйте, {user.login}#{user.id}
+                        </h1>
+                    </div>
+
+                    <div
+                        className={'mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+                        <div className={'flex flex-col gap-4'}>
+                            <form className={'rounded-2xl flex gap-1'} onSubmit={handleSubmit(onSubmit)}>
+                                <Input className={'w-full shadow-lg'} placeholder={'Название команды'} {...register('name', {required: true})}/>
+                                <Input className={'w-full shadow-lg'} placeholder={'ID игрока'} {...register('user_id', {required: true})}/>
+                                <PrimaryButton className={'shadow-lg'}>
+                                    <ChevronRightIcon className="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                </PrimaryButton>
+                            </form>
+                            <Table/>
+                        </div>
+                    </div>
 
 
-                   <div className={'p-8 bg-white mx-auto max-w-[800px] rounded-3xl'}>
-                       <div className={'flex flex-col gap-4'}>
-                           <div className={'rounded-2xl flex gap-1'}>
-                               <Input className={'w-full shadow-lg'} placeholder={'Название команды'} />
-                               <PrimaryButton className={'shadow-lg'}>
-                                   <ChevronRightIcon class="h-6 w-6 text-gray-500 stroke-[3]"/>
-                               </PrimaryButton>
-                           </div>
-                           <Table/>
-                       </div>
-                   </div>
-
-
-               </div>
+                </div>
             </Page>
         </App>
     )

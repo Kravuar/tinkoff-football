@@ -31,7 +31,7 @@ export const Registration = () => {
 
     const onSubmit = (data) => {
         console.log(data)
-        registrationMutation.mutate(data)
+        // registrationMutation.mutate(data)
     }
 
     return (

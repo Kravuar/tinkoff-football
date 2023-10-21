@@ -3,7 +3,7 @@ import {persist} from 'zustand/middleware'
 
 const initialUser = {
     id: 0,
-    username: "",
+    login: "",
 }
 
 export const useUser = create(persist(

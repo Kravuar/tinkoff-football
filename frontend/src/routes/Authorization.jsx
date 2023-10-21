@@ -26,12 +26,19 @@ const useLoginMutation = () => {
 }
 
 export const Authorization = () => {
+    const setUser = useUser(state => state.setUser)
+    const navigate = useNavigate()
     const loginMutation = useLoginMutation()
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
 
     const onSubmit = (data) => {
         console.log(data)
-        loginMutation.mutate(data)
+        setUser({
+            id: 512,
+            login: data.login
+        })
+        navigate('/profile')
+        // loginMutation.mutate(data)
     }
 
     return (
