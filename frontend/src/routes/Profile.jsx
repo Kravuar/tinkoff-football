@@ -11,6 +11,9 @@ import {useForm} from "react-hook-form";
 import {Td, Th, ThTd, Tr} from "../components/table/Table.jsx";
 import {Link} from "react-router-dom";
 import {CalendarDaysIcon, PlayIcon, TrophyIcon} from "@heroicons/react/24/outline/index.js";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {api} from "../api.js";
+import {Spinner} from "../components/Spinner.jsx";
 
 
 /* состояния
@@ -108,30 +111,31 @@ const TeamModal = ({onSubmit, title, subtitle, children}) => {
     )
 }
 
-export const Profile = () => {
-    const user = useUser(state => state.user)
-    const {register, handleSubmit, watch, formState: {errors}} = useForm();
-    const onSubmit = (data) => {
-        console.log(data)
-    }
+const Teams = () => {
+    const {data: teams, isLoading, isError} = useQuery(
+        ['teams'],
+        () => api.get('/teams/my')
+    )
     return (
-        <App>
-            <Header/>
-            <Page>
-                <div className={'pt-[170px] pb-[300px] flex flex-col items-center w-full'}>
-
-                    <div className={'p-3'}>
-                        <h1 className={'text-[44px] font-bold'}>
-                            Здравствуйте, {user.login}#{user.id}
-                        </h1>
-                    </div>
-
-                    <div
-                        className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
-                        <div className={'flex flex-col gap-4'}>
-                            <h1 className={'text-2xl font-semibold'}>
-                                Ваши команды
-                            </h1>
+        <div
+            className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+            <div className={'flex flex-col gap-4'}>
+                <h1 className={'text-2xl font-semibold'}>
+                    Ваши команды
+                </h1>
+                {
+                    isError || isLoading ? (
+                        isLoading ? (
+                            <div className={'w-full flex justify-center items-center'}>
+                                <Spinner/>
+                            </div>
+                        ) : (
+                            <div>
+                                Ошибка загрузки ваших команд
+                            </div>
+                        )
+                    ) : (
+                        <>
                             <form className={'rounded-2xl flex gap-1'} onSubmit={handleSubmit(onSubmit)}>
                                 <Input className={'w-full shadow-lg'}
                                        placeholder={'Название команды'} {...register('name', {required: true})}/>
@@ -156,12 +160,17 @@ export const Profile = () => {
                                     <tbody>
                                     {
                                         teams.map(team => {
-                                            const accept = () => {
-                                                console.log('accept invitation')
-                                            }
-                                            const leave = () => {
-                                                console.log('leave team')
-                                            }
+                                            const client = useQueryClient()
+                                            const joinMutation = useMutation((id) => api.put(`/teams/${id}/join`), {
+                                                onSettled: () => {
+                                                    client.invalidateQueries(['teams'])
+                                                }
+                                            })
+                                            const cancelMutation = useMutation((id) => api.delete(`/teams/${id}/declineInvite`), {
+                                                onSettled: () => {
+                                                    client.invalidateQueries(['teams'])
+                                                }
+                                            })
                                             const cancel = () => {
                                                 console.log('cancel invitation')
                                             }
@@ -172,40 +181,43 @@ export const Profile = () => {
                                                         {team.name}
                                                     </ThTd>
                                                     <Td>
-                                                        {team.player_name}
+                                                        {team.secondPlayer.username}
                                                     </Td>
                                                     <Td>
-                                                        {team.player_id}
-                                                    </Td>
-                                                    <Td>
-                                                        {
-                                                            {
-                                                                ok: 'Вы в команде',
-                                                                me_invited: 'Вы пригласили',
-                                                                i_invited: 'Вас пригласили',
-                                                            } [team.status]
-                                                        }
+                                                        {team.secondPlayer.id}
                                                     </Td>
                                                     <Td>
                                                         {
                                                             {
-                                                                ok: <TeamModal onSubmit={leave}
-                                                                               title={'Выход из команды'}
-                                                                               subtitle={'Вы уверены, что хотите покинуть команду?'}>
-                                                                    <XMarkIcon
-                                                                        className="h-6 w-6 stroke-2 text-red-500"/>
-                                                                </TeamModal>,
-                                                                me_invited: <TeamModal onSubmit={cancel}
-                                                                                       title={'Отменить приглашение'}
-                                                                                       subtitle={'Вы уверены, что хотите отменить приглашение?'}>
-                                                                    <XMarkIcon
-                                                                        className="h-6 w-6 stroke-2 text-red-500"/>
-                                                                </TeamModal>,
-                                                                i_invited: <button onClick={accept}>
-                                                                    <CheckIcon className="h-6 w-6 text-green-500"/>
-                                                                </button>,
-                                                            } [team.status]
+                                                                INVITED: 'Вы пригласили',
+                                                                JOINED: 'Вы в команде',
+                                                            } [team.secondPlayerStatus]
                                                         }
+                                                    </Td>
+                                                    <Td>
+                                                        {
+                                                            cancelMutation.isLoading || joinMutation.isLoading ? (
+                                                                <Spinner/>
+                                                            ) : (
+                                                                <>
+                                                                    <TeamModal onSubmit={() => cancelMutation.mutate()}
+                                                                               title={'Отменить приглашение'}
+                                                                               subtitle={'Вы уверены, что хотите отменить приглашение?'}>
+                                                                        <XMarkIcon
+                                                                            className="h-6 w-6 stroke-2 text-red-500"/>
+                                                                    </TeamModal>
+                                                                    <button onClick={() => joinMutation.mutate()}>
+                                                                        <CheckIcon className="h-6 w-6 text-green-500"/>
+                                                                    </button>
+                                                                </>
+                                                            )
+                                                        }
+                                                        {/*<TeamModal onSubmit={leave}*/}
+                                                        {/*           title={'Выход из команды'}*/}
+                                                        {/*           subtitle={'Вы уверены, что хотите покинуть команду?'}>*/}
+                                                        {/*    <XMarkIcon*/}
+                                                        {/*        className="h-6 w-6 stroke-2 text-red-500"/>*/}
+                                                        {/*</TeamModal>*/}
                                                     </Td>
                                                 </Tr>
                                             )
@@ -214,8 +226,33 @@ export const Profile = () => {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </>
+                    )
+                }
+            </div>
+        </div>
+    )
+}
+
+export const Profile = () => {
+    const user = useUser(state => state.user)
+    const {register, handleSubmit, watch, formState: {errors}} = useForm();
+    const onSubmit = (data) => {
+        console.log(data)
+    }
+    return (
+        <App>
+            <Header/>
+            <Page>
+                <div className={'pt-[170px] pb-[300px] flex flex-col items-center w-full'}>
+
+                    <div className={'p-3'}>
+                        <h1 className={'text-[44px] font-bold'}>
+                            Здравствуйте, {user.login}#{user.id}
+                        </h1>
                     </div>
+
+                    <Teams/>
 
                     <div
                         className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
