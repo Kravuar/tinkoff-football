@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
+import net.kravuar.tinkofffootball.domain.model.user.User;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -37,6 +38,9 @@ public class Tournament {
     @OneToMany(mappedBy = "tournament")
     private Set<Match> matches = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private User owner;
+
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime creationDate = LocalDateTime.now();
@@ -58,7 +62,8 @@ public class Tournament {
     @Column(nullable = false)
     private int maxParticipants;
 
-    public Tournament(TournamentFormDTO tournamentForm) {
+    public Tournament(TournamentFormDTO tournamentForm, User owner) {
+        this.owner = owner;
         this.title = tournamentForm.getTitle();
         this.startDate = tournamentForm.getStartDateTime();
         var matchDTOs = tournamentForm.getMatches();
