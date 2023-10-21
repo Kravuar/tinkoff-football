@@ -1,6 +1,6 @@
 package net.kravuar.tinkofffootball.application.repo;
 
-import net.kravuar.tinkofffootball.domain.model.service.Team;
+import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

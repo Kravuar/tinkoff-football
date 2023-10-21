@@ -1,5 +1,6 @@
 package net.kravuar.tinkofffootball.application.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TeamService;
 import net.kravuar.tinkofffootball.domain.model.dto.TeamFormDTO;
@@ -20,13 +21,18 @@ public class TeamController {
     }
 
     @PostMapping("/create")
-    public void createTeam(TeamFormDTO teamForm, @AuthenticationPrincipal UserInfo userInfo) {
+    public void createTeam(@Valid TeamFormDTO teamForm, @AuthenticationPrincipal UserInfo userInfo) {
         teamService.createTeam(teamForm, userInfo);
     }
 
     @PutMapping("/{id}/join/")
     public void joinTeam(@PathVariable Long id, @AuthenticationPrincipal UserInfo userInfo) {
         teamService.joinTeam(id, userInfo);
+    }
+
+    @PutMapping("/{id}/invite/{userId}")
+    public void inviteToTeam(@PathVariable Long id, @PathVariable Long userId, @AuthenticationPrincipal UserInfo userInfo) {
+        teamService.inviteToTeam(id, userId, userInfo);
     }
 
     @PutMapping("/{id}/leave/")

@@ -1,6 +1,8 @@
 package net.kravuar.tinkofffootball.domain.model.tournaments;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +21,8 @@ public class Tournament {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank
+    @Min(4)
     private String title;
 
     @OneToMany(mappedBy = "tournament")

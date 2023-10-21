@@ -1,4 +1,4 @@
-package net.kravuar.tinkofffootball.domain.model.service;
+package net.kravuar.tinkofffootball.domain.model.tournaments;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,8 +20,7 @@ public class Team {
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private User captain;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,8 +30,7 @@ public class Team {
     @Enumerated
     private SecondPlayerStatus secondPlayerStatus = SecondPlayerStatus.INVITED;
 
-    public Team(User captain, User secondPlayer) {
+    public Team(User captain) {
         this.captain = captain;
-        this.secondPlayer = secondPlayer;
     }
 }

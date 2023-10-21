@@ -1,5 +1,6 @@
 package net.kravuar.tinkofffootball.application.web;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.UserService;
 import net.kravuar.tinkofffootball.domain.model.dto.DetailedUserInfoDTO;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/findByUsername/{username}")
-    public Collection<UserInfoDTO> findByUsername(@PathVariable String username) {
+    public Collection<UserInfoDTO> findByUsername(@PathVariable @NotBlank String username) {
         return userService.findByUsername(username);
     }
 }
