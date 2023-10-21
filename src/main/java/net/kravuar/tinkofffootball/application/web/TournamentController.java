@@ -29,8 +29,8 @@ public class TournamentController {
     }
 
     @PostMapping("/create")
-    public void createTournament(@RequestBody @Valid TournamentFormDTO tournamentForm) {
-        tournamentService.createTournament(tournamentForm);
+    public void createTournament(@RequestBody @Valid TournamentFormDTO tournamentForm, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.createTournament(tournamentForm, userInfo);
     }
 
     @PostMapping("/{id}/start")

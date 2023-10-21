@@ -21,6 +21,10 @@ public class UserService {
         );
     }
 
+    public User getReference(Long id) {
+        return userRepo.getReferenceById(id);
+    }
+
     public User findOrElseThrow(String username) {
         return userRepo.findUserByUsername(username).orElseThrow(
                 () -> new ResourceNotFoundException("user", "username", username)

@@ -3,10 +3,7 @@ package net.kravuar.tinkofffootball.application.services;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.repo.TournamentParticipantsRepo;
 import net.kravuar.tinkofffootball.application.repo.TournamentRepo;
-import net.kravuar.tinkofffootball.domain.model.dto.DetailedTournamentDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
+import net.kravuar.tinkofffootball.domain.model.dto.*;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
 import net.kravuar.tinkofffootball.domain.model.service.TournamentHandler;
@@ -18,6 +15,7 @@ import net.kravuar.tinkofffootball.domain.model.util.ParticipantId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
@@ -71,8 +69,9 @@ public class TournamentService {
         return new DetailedTournamentDTO(findOrElseThrow(id));
     }
 
-    public void createTournament(TournamentFormDTO tournamentForm) {
-        var tournament = new Tournament(tournamentForm);
+    public void createTournament(TournamentFormDTO tournamentForm, UserInfo userInfo) {
+        var owner = userService.getReference(userInfo.getId());
+        var tournament = new Tournament(tournamentForm, owner);
         tournamentRepo.save(tournament);
     }
 
@@ -83,9 +82,10 @@ public class TournamentService {
         if (tournament.getParticipants() == tournament.getMaxParticipants())
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Мест нет.");
         var team = teamService.findOrElseThrow(teamId);
-        if (team.getSecondPlayerStatus() == Team.SecondPlayerStatus.INVITED) {
+        if (team.getSecondPlayerStatus() == Team.SecondPlayerStatus.INVITED)
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Комманда не сформирована.");
-        }
+        if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
+            throw new IllegalArgumentException("Нельзя присоединится к турниру. Вы не состоите в данной команде.");
         tournament.setParticipants(tournament.getParticipants() + 1);
         tournamentParticipantsRepo.save(new TournamentParticipant(tournament, team));
 //        TODO: fire event to lifetime participants update
@@ -94,22 +94,30 @@ public class TournamentService {
     public void leaveTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
         var tournament = findOrElseThrow(tournamentId);
         var tournamentStatus = tournament.getStatus();
+        var team = teamService.findOrElseThrow(teamId);
+        if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
+            throw new IllegalArgumentException("Нельзя выйти из турнира. Вы не состоите в данной команде.");
         if (tournamentStatus != Tournament.TournamentStatus.PENDING || tournamentStatus != Tournament.TournamentStatus.ACTIVE)
             throw new IllegalArgumentException("Нельзя выйти из турнира.");
-        var toDelete = new ParticipantId(tournament, teamService.getReference(teamId));
+        var toDelete = new ParticipantId(tournament, team);
         if (tournamentParticipantsRepo.existsById(toDelete)) {
             tournamentParticipantsRepo.deleteById(toDelete);
             tournament.setParticipants(tournament.getParticipants() - 1);
         }
-//        TODO: fire MatchFinishedEvent (auto-lose)
+//        TODO: fire MatchFinishedEvent if tournament is active (auto-lose)
     }
 
     public void updateScore(Long tournamentId, Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
-//  TODO: Check whether userInfo principal is the owner of this tournament
-
+        var tournament = findOrElseThrow(tournamentId);
+        if (tournament.getOwner().getId() != userInfo.getId())
+            throw new AccessDeniedException("Вы не владелец турнира.");
+//        var match =
+//      handle match finish
     }
 
     public void startTournament(Long id, UserInfo userInfo) {
+        var tournament = findOrElseThrow(id);
+//        if (tournament)
 //        TODO: check if owner
 //        TODO: form bracket
 //        TODO: add to active
