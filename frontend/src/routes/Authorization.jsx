@@ -16,7 +16,7 @@ const useLoginMutation = () => {
     const queryClient = useQueryClient()
     const navigate = useNavigate()
     return useMutation({
-        mutationFn: (data) => api.post("/auth/login", data),
+        mutationFn: (data) => api.post("/auth/signIn", data),
         onSuccess: async (response) => {
             setUser(response.data)
             await queryClient.invalidateQueries([])
