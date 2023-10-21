@@ -16,7 +16,7 @@ import net.kravuar.tinkofffootball.domain.model.dto.UserInfoDTO;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;

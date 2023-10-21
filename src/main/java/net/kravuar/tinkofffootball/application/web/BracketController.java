@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 @RestController
-@RequestMapping("/tournaments/{id}/bracket")
+@RequestMapping("/api/tournaments/{id}/bracket")
 @RequiredArgsConstructor
 public class BracketController {
     private final TournamentService tournamentService;

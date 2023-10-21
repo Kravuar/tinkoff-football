@@ -97,6 +97,12 @@ public class TournamentService {
 
     }
 
+    public void startTournament(Long id, UserInfo userInfo) {
+//        TODO: check if owner
+//        TODO: form bracket
+//        TODO: add to active
+    }
+
 //    TODO: handle proper bracket movement (like if no opponent - advance)
 
 //    TODO: add handler for the ScoreUpdateEvent (check if match is finished, if so fire new MatchFinishedEvent)

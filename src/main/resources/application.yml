@@ -3,11 +3,11 @@ web:
     - http://localhost:3000 # front
     - http://localhost:5555 # postman
   unauthenticated-endpoints:
-    - "/auth/**"
+    - "/api/auth/**"
     - "/v3/api-docs/**"
     - "/swagger-ui/**"
-    - "/tournaments/list/**"
-    - "/tournaments/*/bracket/subscribe/*"
+    - "/api/tournaments/list/**"
+    - "/api/tournaments/*/bracket/subscribe/*"
 
 spring:
   datasource:

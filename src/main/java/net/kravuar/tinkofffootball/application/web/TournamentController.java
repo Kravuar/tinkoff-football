@@ -13,7 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tournaments")
+@RequestMapping("/api/tournaments")
 @RequiredArgsConstructor
 public class TournamentController {
     private final TournamentService tournamentService;
@@ -28,10 +28,14 @@ public class TournamentController {
         return tournamentService.getTournamentList(pageSize, page);
     }
 
-    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public void createTournament(@RequestBody @Valid TournamentFormDTO tournamentForm) {
         tournamentService.createTournament(tournamentForm);
+    }
+
+    @PostMapping("/{id}/start")
+    public void startTournament(@PathVariable Long id, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.startTournament(id, userInfo);
     }
 
 
