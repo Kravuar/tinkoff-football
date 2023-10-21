@@ -112,10 +112,26 @@ const TeamModal = ({onSubmit, title, subtitle, children}) => {
 }
 
 const Teams = () => {
+    const client = useQueryClient()
+    const {register, handleSubmit} = useForm()
     const {data: teams, isLoading, isError} = useQuery(
         ['teams'],
-        () => api.get('/teams/my')
+        async () => (await api.get('/teams/my')).data
     )
+    console.log(teams)
+    const addTeamMutation = useMutation((data) => api.post('/teams/create', {
+        name: data.name,
+        secondPlayerId: data.user_id,
+    }), {
+        onSettled: () => {
+            client.invalidateQueries(['teams'])
+        }
+    })
+    const onSubmit = (data) => {
+        console.log(data)
+        addTeamMutation.mutate(data)
+    }
+
     return (
         <div
             className={'w-full mt-14 p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
@@ -160,7 +176,6 @@ const Teams = () => {
                                     <tbody>
                                     {
                                         teams.map(team => {
-                                            const client = useQueryClient()
                                             const joinMutation = useMutation((id) => api.put(`/teams/${id}/join`), {
                                                 onSettled: () => {
                                                     client.invalidateQueries(['teams'])
