@@ -33,7 +33,9 @@ export const Header = ({}) => {
                         </Link>
                     </li>
                     <li>
-                        <ListBulletIcon className="h-8 w-8 text-gray-500"/>
+                        <Link to={'/tournaments'}>
+                            <ListBulletIcon className="h-8 w-8 text-gray-500"/>
+                        </Link>
                     </li>
                     <li>
                         <TrophyIcon className="h-8 w-8 text-gray-500"/>
