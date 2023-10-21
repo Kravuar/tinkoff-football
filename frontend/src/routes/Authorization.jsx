@@ -5,13 +5,33 @@ import {Page} from "../components/Page.jsx";
 import {Input} from "../components/Input.jsx";
 import {ChevronDoubleRightIcon} from "@heroicons/react/24/outline/index.js";
 import {PrimaryButton} from "../components/Button.jsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useUser} from "../hooks/useUser.jsx";
+import {api} from "../api.js";
+import {Spinner} from "../components/Spinner.jsx";
+
+const useLoginMutation = () => {
+    const setUser = useUser(state => state.setUser)
+    const queryClient = useQueryClient()
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: (data) => api.post("/auth/login", data),
+        onSuccess: async (response) => {
+            setUser(response.data)
+            await queryClient.invalidateQueries([])
+            navigate('/')
+        }
+    })
+}
 
 export const Authorization = () => {
+    const loginMutation = useLoginMutation()
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
 
     const onSubmit = (data) => {
         console.log(data)
+        loginMutation.mutate(data)
     }
 
     return (
@@ -28,12 +48,14 @@ export const Authorization = () => {
                             <Input type={'password'}
                                    placeholder={'Пароль'} {...register('password', {required: true})}/>
 
-                            <PrimaryButton>
+                            <PrimaryButton disabled={loginMutation.isLoading}>
                                 <span className={'text-lg font-medium'}>
                                     Авторизоваться
                                 </span>
                                 <span>
-                                    <ChevronDoubleRightIcon class="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                    {
+                                        loginMutation.isLoading ? <Spinner/> : <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                    }
                                 </span>
                             </PrimaryButton>
                         </form>

@@ -5,13 +5,33 @@ import {ChevronDoubleRightIcon} from "@heroicons/react/24/outline";
 import {Input} from "../components/Input.jsx";
 import {useForm} from "react-hook-form";
 import {PrimaryButton} from "../components/Button.jsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useUser} from "../hooks/useUser.jsx";
+import {api} from "../api.js";
+import {Spinner} from "../components/Spinner.jsx";
+
+const useRegistrationMutation = () => {
+    const queryClient = useQueryClient()
+    const setUser = useUser(state => state.setUser)
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: (data) => api.post("/auth/registration", data),
+        onSuccess: async (response) => {
+            setUser(response.data)
+            await queryClient.invalidateQueries([])
+            navigate('/')
+        }
+    })
+}
 
 export const Registration = () => {
+    const registrationMutation = useRegistrationMutation()
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
 
     const onSubmit = (data) => {
         console.log(data)
+        registrationMutation.mutate(data)
     }
 
     return (
@@ -30,12 +50,14 @@ export const Registration = () => {
                             <Input type={'password'}
                                    placeholder={'Повторите пароль'} {...register('password_confirmation', {required: true})}/>
 
-                            <PrimaryButton>
+                            <PrimaryButton disabled={registrationMutation.isLoading}>
                                 <span className={'text-lg font-medium'}>
                                     Зарегистрироваться
                                 </span>
                                 <span>
-                                    <ChevronDoubleRightIcon class="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                    {
+                                        registrationMutation.isLoading ? <Spinner/> : <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                    }
                                 </span>
                             </PrimaryButton>
                         </form>
