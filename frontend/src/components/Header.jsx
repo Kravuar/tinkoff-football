@@ -1,10 +1,38 @@
-import {HomeIcon, UserCircleIcon, ListBulletIcon, TrophyIcon} from "@heroicons/react/24/outline";
-import {Link} from "react-router-dom";
+import {
+    HomeIcon,
+    UserCircleIcon,
+    ListBulletIcon,
+    TrophyIcon,
+    ArrowRightOnRectangleIcon
+} from "@heroicons/react/24/outline";
+import {Link, useNavigate} from "react-router-dom";
 import {useUser} from "../hooks/useUser.jsx";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {api} from "../api.js";
+
+
+const useLogoutMutation = () => {
+    const invalidateUser = useUser(state => state.invalidateUser)
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => api.get("/auth/logout"),
+        onSuccess: async () => {
+            invalidateUser()
+        }
+    })
+}
 
 export const Header = ({}) => {
+    const navigate = useNavigate()
+    const logoutMutation = useLogoutMutation();
     const user = useUser(state => state.user)
     const profileLink = user.id === 0 ? '/authorization' : '/profile'
+
+    const logOut = () => {
+        logoutMutation.mutateAsync().then(() => {
+            navigate('/')
+        })
+    }
     return (
         <div className={'sticky left-0 right-0 top-0 z-50 bg-white'}>
             <nav className={'max-w-page mx-auto flex py-3 max-h-[64px]'}>
@@ -41,10 +69,17 @@ export const Header = ({}) => {
                         <TrophyIcon className="h-8 w-8 text-gray-500"/>
                     </li>
                 </ul>
-                <div>
+                <div className={'flex gap-2'}>
                     <Link to={profileLink}>
                         <UserCircleIcon className="h-8 w-8 text-gray-500"/>
                     </Link>
+                    {
+                        user.id !== 0 ? (
+                            <button onClick={logOut}>
+                                <ArrowRightOnRectangleIcon className="h-8 w-8 text-gray-500" />
+                            </button>
+                        ) : null
+                    }
                 </div>
             </nav>
         </div>

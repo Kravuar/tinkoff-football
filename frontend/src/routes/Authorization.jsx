@@ -14,13 +14,18 @@ import {Spinner} from "../components/Spinner.jsx";
 const useLoginMutation = () => {
     const setUser = useUser(state => state.setUser)
     const queryClient = useQueryClient()
-    const navigate = useNavigate()
     return useMutation({
-        mutationFn: (data) => api.post("/auth/signIn", data),
+        mutationFn: (data) => api.post("/auth/signIn", {
+            username: data.login,
+            password: data.password
+        }),
         onSuccess: async (response) => {
-            setUser(response.data)
+            console.log(response.data)
+            setUser({
+                id: response.data.id,
+                login: response.data.username
+            })
             await queryClient.invalidateQueries([])
-            navigate('/')
         }
     })
 }
@@ -33,12 +38,9 @@ export const Authorization = () => {
 
     const onSubmit = (data) => {
         console.log(data)
-        setUser({
-            id: 512,
-            login: data.login
+        loginMutation.mutateAsync(data).then(() => {
+            navigate('/profile')
         })
-        navigate('/profile')
-        // loginMutation.mutate(data)
     }
 
     return (
