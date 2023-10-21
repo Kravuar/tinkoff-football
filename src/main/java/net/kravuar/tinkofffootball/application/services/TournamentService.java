@@ -132,8 +132,17 @@ public class TournamentService {
         if (participants.size() < 2) {
             throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
         }
+        var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil(participants.size() / 2)).first());
+        for (var i = 0; i < participants.size(); i+=2) {
+            var match = matches.get(i / 2);
+            match.setTeam1(participants.get(i).getTeam());
+            match.setTeam1(participants.get(i + 1).getTeam());
+        }
+//        if (matches.get(matches.size() - 1).getTeam2() == null) {
+//            fire event (auto-win)
+//        }
+
         activeTournaments.put(tournamentId, new TournamentHandler(tournament));
-//        TODO: form bracket
     }
 
 //    TODO: handle proper bracket movement (like if no opponent - advance)

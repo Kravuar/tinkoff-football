@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.repo.MatchRepo;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
 import net.kravuar.tinkofffootball.domain.model.tournaments.Match;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,5 +18,9 @@ public class MatchService {
         return matchRepo.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("match", "id", id)
         );
+    }
+
+    public List<Match> getFirstMatches(Long tournamentId, Pageable pageable) {
+        return matchRepo.findAllByTournamentIdOrderByBracketPositionDesc(tournamentId, pageable);
     }
 }
