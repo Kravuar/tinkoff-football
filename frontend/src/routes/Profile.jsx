@@ -14,6 +14,7 @@ import {CalendarDaysIcon, PlayIcon, TrophyIcon} from "@heroicons/react/24/outlin
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
 import {Spinner} from "../components/Spinner.jsx";
+import {useTeams} from "../queries.js";
 
 
 /* состояния
@@ -111,13 +112,97 @@ const TeamModal = ({onSubmit, title, subtitle, children}) => {
     )
 }
 
+const Team = ({team}) => {
+    const user = useUser(state => state.user)
+    const secondPlayer = team.secondPlayer.id === user.id ? team.captain : team.secondPlayer
+
+    const can_accept = team.secondPlayerStatus === 'INVITED' && team.secondPlayer.id === user.id
+    const can_cancel = team.secondPlayerStatus === 'INVITED' && team.captain.id === user.id
+    const can_reject = team.secondPlayerStatus === 'INVITED' && team.secondPlayer.id === user.id
+    console.log(can_accept, can_cancel, can_reject, user.id, team.secondPlayer.id)
+
+    const client = useQueryClient()
+    const joinMutation = useMutation((id) => api.put(`/teams/${id}/join/`), {
+        onSettled: () => {
+            client.invalidateQueries(['teams'])
+        }
+    })
+    const cancelMutation = useMutation((id) => api.delete(`/teams/${id}/declineInvite`), {
+        onSettled: () => {
+            client.invalidateQueries(['teams'])
+        }
+    })
+    return (
+        <Tr className="bg-white border-b odd:bg-white even:bg-gray-50"
+            key={team.id}>
+            <ThTd>
+                {team.name}
+            </ThTd>
+            <Td>
+                {secondPlayer.username}
+            </Td>
+            <Td>
+                {secondPlayer.id}
+            </Td>
+            <Td>
+                {
+                    {
+                        INVITED: 'Вы пригласили',
+                        JOINED: 'Вы в команде',
+                    } [team.secondPlayerStatus]
+                }
+            </Td>
+            <Td>
+                {
+                    cancelMutation.isLoading || joinMutation.isLoading ? (
+                        <Spinner/>
+                    ) : (
+                        <div className={'flex gap-2'}>
+                            {
+                                can_cancel ? (
+                                    <TeamModal onSubmit={() => cancelMutation.mutate(team.id)}
+                                               title={'Отменить приглашение'}
+                                               subtitle={'Вы уверены, что хотите отменить приглашение?'}>
+                                        <XMarkIcon title={'Отменить'}
+                                            className="h-6 w-6 stroke-2 text-red-500"/>
+                                    </TeamModal>
+                                ) : null
+                            }
+                            {
+                                can_accept ? (
+                                    <button onClick={() => joinMutation.mutate(team.id)}>
+                                        <CheckIcon title={'Присоединиться'} className="h-6 w-6 text-green-500"/>
+                                    </button>
+                                ) : null
+                            }
+                            {
+                                can_reject ? (
+                                    <TeamModal onSubmit={() => cancelMutation.mutate(team.id)}
+                                               title={'Отказаться от присоединения к команде'}
+                                               subtitle={'Вы уверены, что хотите оказаться?'}>
+                                        <XMarkIcon title={'Отказаться'}
+                                                   className="h-6 w-6 stroke-2 text-red-500"/>
+                                    </TeamModal>
+                                ) : null
+                            }
+                        </div>
+                    )
+                }
+                {/*<TeamModal onSubmit={leave}*/}
+                {/*           title={'Выход из команды'}*/}
+                {/*           subtitle={'Вы уверены, что хотите покинуть команду?'}>*/}
+                {/*    <XMarkIcon*/}
+                {/*        className="h-6 w-6 stroke-2 text-red-500"/>*/}
+                {/*</TeamModal>*/}
+            </Td>
+        </Tr>
+    )
+}
+
 const Teams = () => {
     const client = useQueryClient()
     const {register, handleSubmit} = useForm()
-    const {data: teams, isLoading, isError} = useQuery(
-        ['teams'],
-        async () => (await api.get('/teams/my')).data
-    )
+    const {data: teams, isLoading, isError} = useTeams()
     console.log(teams)
     const addTeamMutation = useMutation((data) => api.post('/teams/create', {
         name: data.name,
@@ -175,68 +260,7 @@ const Teams = () => {
                                     </thead>
                                     <tbody>
                                     {
-                                        teams.map(team => {
-                                            const joinMutation = useMutation((id) => api.put(`/teams/${id}/join`), {
-                                                onSettled: () => {
-                                                    client.invalidateQueries(['teams'])
-                                                }
-                                            })
-                                            const cancelMutation = useMutation((id) => api.delete(`/teams/${id}/declineInvite`), {
-                                                onSettled: () => {
-                                                    client.invalidateQueries(['teams'])
-                                                }
-                                            })
-                                            const cancel = () => {
-                                                console.log('cancel invitation')
-                                            }
-                                            return (
-                                                <Tr className="bg-white border-b odd:bg-white even:bg-gray-50"
-                                                    key={team.id}>
-                                                    <ThTd>
-                                                        {team.name}
-                                                    </ThTd>
-                                                    <Td>
-                                                        {team.secondPlayer.username}
-                                                    </Td>
-                                                    <Td>
-                                                        {team.secondPlayer.id}
-                                                    </Td>
-                                                    <Td>
-                                                        {
-                                                            {
-                                                                INVITED: 'Вы пригласили',
-                                                                JOINED: 'Вы в команде',
-                                                            } [team.secondPlayerStatus]
-                                                        }
-                                                    </Td>
-                                                    <Td>
-                                                        {
-                                                            cancelMutation.isLoading || joinMutation.isLoading ? (
-                                                                <Spinner/>
-                                                            ) : (
-                                                                <>
-                                                                    <TeamModal onSubmit={() => cancelMutation.mutate()}
-                                                                               title={'Отменить приглашение'}
-                                                                               subtitle={'Вы уверены, что хотите отменить приглашение?'}>
-                                                                        <XMarkIcon
-                                                                            className="h-6 w-6 stroke-2 text-red-500"/>
-                                                                    </TeamModal>
-                                                                    <button onClick={() => joinMutation.mutate()}>
-                                                                        <CheckIcon className="h-6 w-6 text-green-500"/>
-                                                                    </button>
-                                                                </>
-                                                            )
-                                                        }
-                                                        {/*<TeamModal onSubmit={leave}*/}
-                                                        {/*           title={'Выход из команды'}*/}
-                                                        {/*           subtitle={'Вы уверены, что хотите покинуть команду?'}>*/}
-                                                        {/*    <XMarkIcon*/}
-                                                        {/*        className="h-6 w-6 stroke-2 text-red-500"/>*/}
-                                                        {/*</TeamModal>*/}
-                                                    </Td>
-                                                </Tr>
-                                            )
-                                        })
+                                        teams.map(team => <Team key={team.id} team={team}/>)
                                     }
                                     </tbody>
                                 </table>

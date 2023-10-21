@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 public class JWTProps {
     private String tokenPrefix = "Bearer_";
-    private long accessTokenExpiration = 300;
+    private long accessTokenExpiration = 4000;
     private long refreshTokenExpiration = 43200;
     private String issuer = "jwt-auth";
     private String authoritiesClaimName = "authorities";

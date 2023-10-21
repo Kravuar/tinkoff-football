@@ -120,59 +120,56 @@ export const TournamentGrid = () => {
                         <ArrowPathIcon className="h-6 w-6 text-gray-500 stroke-2"/>
                     </PrimaryButton>
                     <div className={'mt-10 min-w-full min-h-screen overflow-x-scroll'}>
-                        <div className={' overflow-x-scroll'}>
-                            <div className={'relative h-[70vh]'}>
-                                <div ref={containerElement} className={'absolute p-8 flex gap-8'}>
-                                    {
-                                        nodes.map((col, count) => {
-                                            return (
-                                                <Column key={col.name} count={count}>
-                                                    {
-                                                        col.elements.map(node => {
-                                                            return (
-                                                                <Brick.Root key={node.id} ref={(el) => nodeCb(node, el)}>
-                                                                    <Brick.Player>
-                                                                        <div>
-                                                                            {node.player1.name}
-                                                                        </div>
-                                                                        <div>
-                                                                            {node.player1.value}
-                                                                        </div>
-                                                                    </Brick.Player>
-                                                                    {
-                                                                        node.player2 ? (
-                                                                            <Brick.Player>
-                                                                                <div>
-                                                                                    {node.player2.name}
-                                                                                </div>
-                                                                                <div>
-                                                                                    {node.player2.value}
-                                                                                </div>
-                                                                            </Brick.Player>
-                                                                        ) : null
-                                                                    }
-                                                                </Brick.Root>
-                                                            )
-                                                        })
-                                                    }
-                                                </Column>
-                                            )
-                                        })
-                                    }
-                                </div>
-                                <svg className={'absolute inset-0 w-full h-full text-primary'}>
-                                    {
-                                        lines.map(line => {
-                                            return (
-                                                <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
-                                                      stroke={'currentColor'} strokeWidth={"2"}/>
-                                            )
-                                        })
-                                    }
-                                </svg>
+                        <div className={'relative h-[70vh] overflow-x-scroll'}>
+                            <div ref={containerElement} className={'p-8 flex gap-8'}>
+                                {
+                                    nodes.map((col, count) => {
+                                        return (
+                                            <Column key={col.name} count={count}>
+                                                {
+                                                    col.elements.map(node => {
+                                                        return (
+                                                            <Brick.Root key={node.id} ref={(el) => nodeCb(node, el)}>
+                                                                <Brick.Player>
+                                                                    <div>
+                                                                        {node.player1.name}
+                                                                    </div>
+                                                                    <div>
+                                                                        {node.player1.value}
+                                                                    </div>
+                                                                </Brick.Player>
+                                                                {
+                                                                    node.player2 ? (
+                                                                        <Brick.Player>
+                                                                            <div>
+                                                                                {node.player2.name}
+                                                                            </div>
+                                                                            <div>
+                                                                                {node.player2.value}
+                                                                            </div>
+                                                                        </Brick.Player>
+                                                                    ) : null
+                                                                }
+                                                            </Brick.Root>
+                                                        )
+                                                    })
+                                                }
+                                            </Column>
+                                        )
+                                    })
+                                }
                             </div>
+                            <svg className={'absolute inset-0 w-full h-full text-primary'}>
+                                {
+                                    lines.map(line => {
+                                        return (
+                                            <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2}
+                                                  stroke={'currentColor'} strokeWidth={"2"}/>
+                                        )
+                                    })
+                                }
+                            </svg>
                         </div>
-
                     </div>
                 </div>
             </Page>

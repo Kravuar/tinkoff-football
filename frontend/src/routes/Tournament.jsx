@@ -4,19 +4,46 @@ import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
 import {PrimaryButton} from "../components/Button.jsx";
 import {Controller, useForm} from "react-hook-form";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
 import Select from "react-select";
-import AsyncSelect from "react-select/async";
+import {useTeams} from "../queries.js";
+import {Spinner} from "../components/Spinner.jsx";
 
 const tournament = {
     name: "Большой турнир", status: "opened"
 }
 
+const TeamSelect = ({...props}) => {
+    const {data: teams, isLoading} = useTeams()
+    console.log(teams)
+    const options = teams?.map(team => {
+        return {
+            id: team.id,
+            value: team.id,
+            label: team.name
+        }
+    })
+    return (
+        <Select
+            options={options}
+            isLoading={isLoading}
+            placeholder={'Выберите команду'}
+            styles={{
+                control: (baseStyles) => ({
+                    ...baseStyles,
+                    padding: 9
+                })
+            }}
+            {...props}
+        />
+    )
+}
+
 export const Tournament = () => {
     const {id} = useParams();
     const client = useQueryClient()
-    const {register, control, handleSubmit} = useForm()
+    const {control, handleSubmit} = useForm()
     const joinMutation = useMutation(['tournament', id], (team_id) => api.get(`/tournaments/${id}/join/${team_id}`), {
         onSettled: () => {
             client.invalidateQueries(['tournament', id])
@@ -25,13 +52,8 @@ export const Tournament = () => {
 
     const onJoin = (data) => {
         console.log(data)
-        // joinMutation.mutate(data.)
+        joinMutation.mutate(data.team.id)
     }
-    const options = [
-        {id: 1, value: 1, label: 'team1'},
-        {id: 2, value: 2, label: 'team2'},
-        {id: 3, value: 3, label: 'team3'},
-    ]
 
     return (<App>
         <Header/>
@@ -57,21 +79,26 @@ export const Tournament = () => {
 
                 <div className={'mt-12'}>
                     {/* принять участие */}
-                    <form className={'flex gap-1 items-center'} onSubmit={handleSubmit(onJoin)}>
+                    <form className={'w-[360px] flex gap-1 items-center'} onSubmit={handleSubmit(onJoin)}>
                         {/*  выбор команды  */}
-                        <Controller rules={{required: true}} control={control} name={'team'}
-                                    defaultValue={null}
-                                    render={({field}) => (
-                                        <AsyncSelect
-                                            defaultOptions={options}
-                                            loadOptions={() => api.get('/teams/my')}
-                                            value={field.value}
-                                            onChange={val => field.onChange(val)}
-                                        />
-                                    )}
-                        />
-                        <PrimaryButton className={'mt-4'}>
-                            Участвовать
+                        <div className={'w-full'}>
+                            <Controller rules={{required: true}} control={control} name={'team'}
+                                        defaultValue={null}
+                                        render={({field}) => (
+                                            <TeamSelect value={field.value} onChange={val => field.onChange(val)}/>
+                                        )}
+                            />
+                        </div>
+                        <PrimaryButton>
+                            {
+                                joinMutation.isLoading ? (
+                                    <Spinner/>
+                                ) : (
+                                    <div>
+                                        Участвовать
+                                    </div>
+                                )
+                            }
                         </PrimaryButton>
                     </form>
                     {/* открыть сетку */}
