@@ -5,6 +5,7 @@ import background from "../assets/landing-background.jpg";
 import football_gray from "../assets/football-gray.png";
 import gray_light2 from "../assets/gray-light2.png";
 import gray_light_cropped from "../assets/gray-light-cropped.png";
+import soccer from "../assets/table_soccer_nobg.png";
 import {PrimaryButton} from "../components/Button.jsx";
 import {Link} from "react-router-dom";
 
@@ -28,7 +29,7 @@ function Root() {
                         </PrimaryButton>
                     </Link>
                     <div className={' max-w-full h-auto overflow-hidden'}>
-                        <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top shadow-2xl max-w-full h-auto'} src={gray_light_cropped} alt={''}/>
+                        <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top max-w-full h-auto'} src={soccer} alt={''}/>
                     </div>
                 </div>
             </Page>
