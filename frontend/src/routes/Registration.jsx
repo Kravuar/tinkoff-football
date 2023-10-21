@@ -14,24 +14,29 @@ import {Spinner} from "../components/Spinner.jsx";
 const useRegistrationMutation = () => {
     const queryClient = useQueryClient()
     const setUser = useUser(state => state.setUser)
-    const navigate = useNavigate()
     return useMutation({
-        mutationFn: (data) => api.post("/auth/registration", data),
+        mutationFn: (data) => api.post("/auth/signUp", {username: data.login, password: data.password}),
         onSuccess: async (response) => {
-            setUser(response.data)
+            console.log(response.data)
+            setUser({
+                id: response.data.id,
+                login: response.data.username,
+            })
             await queryClient.invalidateQueries([])
-            navigate('/')
         }
     })
 }
 
 export const Registration = () => {
+    const navigate = useNavigate()
     const registrationMutation = useRegistrationMutation()
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
-
+    console.log(errors)
     const onSubmit = (data) => {
         console.log(data)
-        // registrationMutation.mutate(data)
+        registrationMutation.mutateAsync(data).then(() => {
+            navigate('/profile')
+        })
     }
 
     return (
@@ -48,7 +53,11 @@ export const Registration = () => {
                             <Input type={'password'}
                                    placeholder={'Пароль'} {...register('password', {required: true})}/>
                             <Input type={'password'}
-                                   placeholder={'Повторите пароль'} {...register('password_confirmation', {required: true})}/>
+                                   placeholder={'Повторите пароль'} {...register('password_confirmation', {required: true, validate: (val) => {
+                                    if (watch('password') !== val) {
+                                        return "Пароли не совпадают";
+                                    }
+                                }})}/>
 
                             <PrimaryButton disabled={registrationMutation.isLoading}>
                                 <span className={'text-lg font-medium'}>
@@ -60,6 +69,13 @@ export const Registration = () => {
                                     }
                                 </span>
                             </PrimaryButton>
+                            <span className={'text-sm text-red-600'}>
+                                {
+                                    Object.keys(errors).map(error => {
+                                        return error.type
+                                    }).join(' ')
+                                }
+                            </span>
                         </form>
                         <div className={'text-sm text-gray-400 text-center mt-3'}>
                                 <Link to={'/authorization'}>
