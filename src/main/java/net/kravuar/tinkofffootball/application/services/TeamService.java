@@ -33,6 +33,7 @@ public class TeamService {
         var secondPlayer = userService.findOrElseThrow(teamForm.getSecondPlayerId());
 
         var team = new Team();
+        team.setName(teamForm.getName());
         team.setCaptain(captain);
         team.setSecondPlayer(secondPlayer);
         teamRepo.save(team);

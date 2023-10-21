@@ -6,5 +6,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MatchRepo extends PagingAndSortingRepository<Match, Long>, JpaRepository<Match, Long> {
+public interface MatchRepo extends JpaRepository<Match, Long> {
 }

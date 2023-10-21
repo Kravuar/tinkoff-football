@@ -32,7 +32,7 @@ public class BracketController {
      * Обновления счёта матча.
      *
      * @param id id турнира.
-     * @param matchId номер матча (внутри сетки).
+     * @param matchId id матча.
      */
     @PostMapping("/updateScore/{matchId}")
     public void updateScore(@PathVariable Long id, @PathVariable Long matchId, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
