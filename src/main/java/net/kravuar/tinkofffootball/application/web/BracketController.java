@@ -1,8 +1,9 @@
 package net.kravuar.tinkofffootball.application.web;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
-import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateDTO;
+import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
 import net.kravuar.tinkofffootball.domain.model.user.UserInfo;
 import org.springframework.http.codec.ServerSentEvent;
@@ -19,13 +20,13 @@ public class BracketController {
     /*
      * Events like participants score update, team movement across the bracket
      * */
-    @GetMapping("/subscribe/{id}")
+    @GetMapping("/subscribe")
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long id) {
         return tournamentService.subscribeToBracketUpdates(id);
     }
 
     @PostMapping("/updateScore")
-    public void updateScore(@PathVariable Long id, ScoreUpdateDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
+    public void updateScore(@PathVariable Long id, @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.updateScore(id, matchUpdate, userInfo);
     }
 

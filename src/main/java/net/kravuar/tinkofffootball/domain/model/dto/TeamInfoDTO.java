@@ -1,7 +1,7 @@
 package net.kravuar.tinkofffootball.domain.model.dto;
 
 import lombok.Data;
-import net.kravuar.tinkofffootball.domain.model.service.Team;
+import net.kravuar.tinkofffootball.domain.model.tournaments.Team;
 
 @Data
 public class TeamInfoDTO {

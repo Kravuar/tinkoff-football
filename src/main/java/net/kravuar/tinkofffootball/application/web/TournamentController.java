@@ -1,5 +1,7 @@
 package net.kravuar.tinkofffootball.application.web;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
@@ -16,13 +18,13 @@ public class TournamentController {
     private final TournamentService tournamentService;
 
     @GetMapping("/list/{pageSize}/{page}")
-    public TournamentListPageDTO getTournamentList(@PathVariable int pageSize, @PathVariable int page) {
+    public TournamentListPageDTO getTournamentList(@PathVariable @Min(1) int pageSize, @PathVariable @Min(0) int page) {
         return tournamentService.getTournamentList(pageSize, page);
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
-    public void createTournament(@RequestBody TournamentFormDTO tournamentForm) {
+    public void createTournament(@RequestBody @Valid TournamentFormDTO tournamentForm) {
         tournamentService.createTournament(tournamentForm);
     }
 

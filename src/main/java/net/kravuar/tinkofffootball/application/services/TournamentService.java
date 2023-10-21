@@ -3,7 +3,7 @@ package net.kravuar.tinkofffootball.application.services;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.repo.TournamentRepo;
 import net.kravuar.tinkofffootball.domain.model.dto.DetailedTournamentDTO;
-import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateDTO;
+import net.kravuar.tinkofffootball.domain.model.dto.ScoreUpdateFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentListPageDTO;
 import net.kravuar.tinkofffootball.domain.model.events.BracketEvent;
@@ -74,7 +74,7 @@ public class TournamentService {
 //        TODO: fire MatchFinishedEvent (auto-lose)
     }
 
-    public void updateScore(Long tournamentId, ScoreUpdateDTO matchUpdate, UserInfo userInfo) {
+    public void updateScore(Long tournamentId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
 //  TODO: Check whether userInfo principal is the owner of this tournament
 
     }

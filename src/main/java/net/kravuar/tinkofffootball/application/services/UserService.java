@@ -21,6 +21,12 @@ public class UserService {
         );
     }
 
+    public User findOrElseThrow(String username) {
+        return userRepo.findUserByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("user", "username", username)
+        );
+    }
+
     public UserInfoDTO getUserInfo(Long id) {
         return new UserInfoDTO(findOrElseThrow(id));
     }
@@ -32,5 +38,9 @@ public class UserService {
     public Collection<UserInfoDTO> findByUsername(String username) {
         return userRepo.findAllByUsernameStartsWith(username)
                 .stream().map(UserInfoDTO::new).toList();
+    }
+
+    public User signUp(User user) {
+        return userRepo.save(user);
     }
 }

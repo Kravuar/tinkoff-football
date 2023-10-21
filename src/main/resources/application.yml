@@ -1,7 +1,13 @@
 web:
   allowed-origins:
-    - http://localhost:3000
-
+    - http://localhost:3000 # front
+    - http://localhost:5555 # postman
+  unauthenticated-endpoints:
+    - "/auth/**"
+    - "/v3/api-docs/**"
+    - "/swagger-ui/**"
+    - "/tournaments/list/**"
+    - "/tournaments/*/bracket/subscribe/*"
 
 spring:
   datasource:
@@ -16,12 +22,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
         default_schema: tinkoff
+  mvc:
+    log-request-details=true:
+logging:
+  level:
+    org:
+      springframework:
+        web: DEBUG
 
-jwt-auth:
-  http:
-    unauthenticated-endpoints:
-      - "/auth/**"
-      - "/tournaments/list/**"
-      - "/tournaments/*/bracket/subscribe/*"
+springdoc:
+  swagger-ui:
+    path: "/swagger-ui/ui.html"
