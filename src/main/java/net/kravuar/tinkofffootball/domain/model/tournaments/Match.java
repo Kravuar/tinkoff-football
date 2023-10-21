@@ -17,7 +17,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Tournament tournament;
 
     @Column(nullable = false)

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.kravuar.tinkofffootball.domain.model.user.User;
 
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -36,4 +38,7 @@ public class Team {
     @Column(nullable = false)
     @Enumerated
     private SecondPlayerStatus secondPlayerStatus = SecondPlayerStatus.INVITED;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private Set<TournamentParticipant> tournamentParticipants;
 }

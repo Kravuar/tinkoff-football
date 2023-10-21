@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class TournamentFormDTO {
     @NotBlank
+    @Size(min=4)
     private String title;
     @NotNull
     @Size(min=1)
