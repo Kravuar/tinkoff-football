@@ -23,7 +23,7 @@ public class ExceptionHandlerService {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public String handle(ResourceNotFoundException exception) {
         return exception.getMessage();
     }

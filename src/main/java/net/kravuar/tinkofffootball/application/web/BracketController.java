@@ -41,23 +41,23 @@ public class BracketController {
         return tournamentService.subscribeToBracketUpdates(tournamentId);
     }
 
-
-    /**
-     * Обновления счёта матча.
-     *
-     * @param matchId id матча.
-     */
+    @Operation(summary = "Обновление счёта матча.", description = "Обновляет счёт выбранного матча, необходимо быть владельцем турнира.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Счёт обновлён."),
+            @ApiResponse(responseCode = "403", description = "Вы не владелец / не авторизован."),
+            @ApiResponse(responseCode = "400", description = "Невозможно обновить счёт."),
+    })
     @PostMapping("/updateScore/{matchId}")
     public void updateScore(@PathVariable Long matchId, @RequestBody @Valid ScoreUpdateFormDTO matchUpdate, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.updateScore(matchId, matchUpdate, userInfo);
     }
 
-    /**
-     * Дисквалификация команды.
-     *
-     * @param tournamentId id турнира.
-     * @param teamId id команды.
-     */
+    @Operation(summary = "Дисквалификация команды.", description = "Засчитывает авто-поражение выбранной команде. Нужно быть владельцем турнира.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Команда успешно дисквалифицирована."),
+            @ApiResponse(responseCode = "403", description = "Вы не владелец / не авторизован."),
+            @ApiResponse(responseCode = "400", description = "Невозможно дисквалифицировать команду."),
+    })
     @PutMapping("/{tournamentId}/bracket/disqualifyTeam/{teamId}")
     public void disqualifyTeam(@PathVariable Long tournamentId, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.leaveTournament(tournamentId, teamId, userInfo);
