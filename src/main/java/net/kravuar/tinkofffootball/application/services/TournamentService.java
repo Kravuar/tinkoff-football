@@ -86,6 +86,7 @@ public class TournamentService {
     }
 
     public synchronized void joinTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
+//        TODO: Check if already in tournament
         var tournament = findOrElseThrow(tournamentId);
         if (tournament.getStatus() != Tournament.TournamentStatus.PENDING)
             throw new IllegalArgumentException("Нельзя присоединится к турниру.");

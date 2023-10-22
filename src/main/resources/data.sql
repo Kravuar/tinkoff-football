@@ -1,50 +1,9 @@
------------------------------------------Users--------------------------------------------
-INSERT INTO Users VALUES ('123notNoob321', 'GrandMaster');
-INSERT INTO Users VALUES ('21CanYouDoSomeForMe', 'Drake');
-INSERT INTO Users VALUES ('yJeNeTot', 'Tinkoff');
-INSERT INTO Users VALUES ('qwerty', 'Oleg');
-INSERT INTO Users VALUES ('roflanPapich', 'Papich');
-INSERT INTO Users VALUES ('roflanBatya', 'Arthas');
-INSERT INTO Users VALUES ('Itali', 'hetEro_phobE');
-INSERT INTO Users VALUES ('BottomG', 'Aleksandr_Pistoletov');
-INSERT INTO Users VALUES ('TopG61', 'Andrew_Tate');
-INSERT INTO Users VALUES ('1BukinTrap777Machine100', 'Gennady');
-------------------------------------------------------------------------------------------
+INSERT INTO `matches` (`best_of`, `bracket_position`, `team1score`, `team2score`, `id`, `team1_id`, `team2_id`, `tournament_id`, `prize`) VALUES (3,4,0,0,1,NULL,NULL,1,'badprize'),(3,3,0,0,2,NULL,NULL,1,'badprize'),(7,0,0,0,3,NULL,NULL,1,'firstprize'),(3,5,0,0,4,NULL,NULL,1,'badprize'),(5,1,0,0,5,NULL,NULL,1,'secondprize'),(3,6,0,0,6,NULL,NULL,1,'badprize'),(5,2,0,0,7,NULL,NULL,1,'secondprize'),(7,0,0,0,8,NULL,NULL,2,'firstprize'),(3,3,0,0,9,NULL,NULL,2,'badprize'),(3,4,0,0,10,NULL,NULL,2,'badprize'),(3,5,0,0,11,NULL,NULL,2,'badprize'),(3,6,0,0,12,NULL,NULL,2,'badprize'),(5,1,0,0,13,NULL,NULL,2,'secondprize'),(5,2,0,0,14,NULL,NULL,2,'secondprize'),(3,13,0,0,15,NULL,NULL,3,'verybadprize'),(3,6,0,0,16,NULL,NULL,3,'badprize'),(3,4,0,0,17,NULL,NULL,3,'badprize'),(3,12,0,0,18,NULL,NULL,3,'verybadprize'),(3,10,0,0,19,NULL,NULL,3,'verybadprize'),(7,0,0,0,20,NULL,NULL,3,'firstprize'),(3,9,0,0,21,NULL,NULL,3,'verybadprize'),(3,14,0,0,22,NULL,NULL,3,'verybadprize'),(5,2,0,0,23,NULL,NULL,3,'secondprize'),(3,7,0,0,24,NULL,NULL,3,'verybadprize'),(3,8,0,0,25,NULL,NULL,3,'verybadprize'),(3,3,0,0,26,NULL,NULL,3,'badprize'),(3,5,0,0,27,NULL,NULL,3,'badprize'),(5,1,0,0,28,NULL,NULL,3,'secondprize'),(3,11,0,0,29,NULL,NULL,3,'verybadprize'),(7,0,0,0,30,NULL,NULL,4,'firstprize'),(5,1,0,0,31,NULL,NULL,4,'secondprize'),(5,2,0,0,32,NULL,NULL,4,'secondprize');
 
+INSERT INTO `teams` (`active`, `second_player_status`, `captain_id`, `id`, `second_player_id`, `name`) VALUES (_binary '',1,1,1,2,'team1'),(_binary '',1,3,2,4,'team2'),(_binary '',1,5,3,6,'team3'),(_binary '',1,7,4,8,'team4'),(_binary '',1,9,5,10,'team5'),(_binary '',1,11,6,12,'team6'),(_binary '',0,13,7,1,'teamunformed');
 
------------------------------------------Teams------------------------------------------—
-INSERT INTO Teams VALUES (1, 'Команда А', 0, 3, 4);
-INSERT INTO Teams VALUES (1, 'Чемпионы Людей', 1, 6, 5);
-INSERT INTO Teams VALUES (1, 'No Homo', 1, 7, 10);
-INSERT INTO Teams VALUES (0, 'Братья звери', 0, 9, 8);
-INSERT INTO Teams VALUES (1, 'Любители шишек', 1, 5, 6);
-------------------------------------------------------------------------------------------
+INSERT INTO `tournament_participants` (`team_id`, `tournament_id`) VALUES (1,1),(2,1),(3,1),(4,1),(5,1),(6,1),(1,2),(2,2),(3,2),(4,3),(5,3),(6,3),(1,4),(2,4),(3,4),(4,4);
 
+INSERT INTO `tournaments` (`max_participants`, `participants`, `status`, `creation_date`, `id`, `owner_id`, `start_date`, `title`) VALUES (8,0,0,'2023-10-22 10:13:24.277135',1,15,'2023-10-25 06:14:39.060000','tournament1'),(8,0,0,'2023-10-22 10:13:45.316468',2,15,'2023-10-25 06:14:39.060000','tournament2'),(16,0,0,'2023-10-22 10:14:32.885168',3,15,'2023-10-25 06:14:39.060000','tournament3'),(4,0,0,'2023-10-22 10:16:06.848414',4,15,'2023-10-25 06:14:39.060000','tournament4');
 
--------------------------------------Tournaments------------------------------------
-INSERT INTO Tournaments VALUES ('2016-11-24 16:00:00', 4, 4, '2016-11-24 16:20:00', 2, '1000$ - СЮДА', 6);
-INSERT INTO Tournaments VALUES ('2022-02-20 12:10:01', 2, 1, '2022-02-24 5:00:00', 3, 'Турнир чемпионов по шашкам', 10);
-INSERT INTO Tournaments VALUES ('2023-10-21 21:19:39', 4, 0, '2023-10-22 20:30:00', 0, 'Турик для чилла', 7);
-INSERT INTO Tournaments VALUES ('2023-10-21 22:01:01', 4, 2, '2023-10-22 04:20:00', 1, 'Раздача заданий на спавне', 1);
-------------------------------------------------------------------------------------------
-
-
-------------------------------Tournament_Participants----------------------------
-INSERT INTO Tournament_Participants VALUES (1, 1);
-INSERT INTO Tournament_Participants VALUES (2, 1);
-INSERT INTO Tournament_Participants VALUES (5, 1);
-INSERT INTO Tournament_Participants VALUES (3, 1);
-
-INSERT INTO Tournament_Participants VALUES (4, 2);
-
-INSERT INTO Tournament_Participants VALUES (4, 4);
-INSERT INTO Tournament_Participants VALUES (2, 4);
-------------------------------------------------------------------------------------------
-
-
------------------------------------------Matches-----------------------------------------
-INSERT INTO Matches VALUES (2, 2, null, 2, 12, 1, 9, 8, 1);
-INSERT INTO Matches VALUES (2, 1, null, 2, 100, 0, 6, 7, 1);
-INSERT INTO Matches VALUES (2, 0, '1000$', 2, 69, 96, 9, 6, 1);
-INSERT INTO Matches VALUES (5, 1, 'Французская Обжарка', 1, 2, 2, 1, 4, 4);
----------------------------------------------------------------------------------------------
+INSERT INTO `users` (`id`, `password`, `username`) VALUES (1,'$2a$10$yh7VOmCsGBFP16MSbo8wm.HXgVNOmL5cva5uUtoCZKctnSGeJfKha','user1'),(2,'$2a$10$9fxkpoaIUIhTosXgzeadrur.jX9uF3Ljr/IgsLLxu6tyShPQK28KW','user2'),(3,'$2a$10$fAxU2c9HAaa.U2cDDPKYs.aYZTXtFoVS.Eyx1VOktQqOqURKx7PrW','user3'),(4,'$2a$10$VUNZy/2VjHddSx2Rtl5gsOZ/PuusyjzFMoYY33CxovnTUM.y9I8h2','user4'),(5,'$2a$10$4o55WtXGKfCje9Mv2Zpgpuh2VzSiHautZ4dc/.AxX0g1nJAzDr.zy','user5'),(6,'$2a$10$0KHTmF/0JnUDVBEoNJ7i6uaKYWfDplSC3zgPm5jEz0hluxfKeLtBu','user6'),(7,'$2a$10$pZv1lGH6ZISb6Bm4uRC4heYh7TSHP6pIHQpo7CYqWVNRzMGXBUR7a','user7'),(8,'$2a$10$U.7uagMaQWSk9v3ZwC6P4.MNwv.x5o6IcNOLQh4bHCmu.T1nxC0oq','user8'),(9,'$2a$10$bOsCMpNP7y9E1/csSnvtROXxoVub2I.fUvMKXvGDsc3zko7TTLkZG','user9'),(10,'$2a$10$48hmsu/knmq/ezabhdmrOOdkst.lVH9AflZ2.rneI4O58CWPvlCEq','user10'),(11,'$2a$10$3675/bSxvltLnlimx/O5eeF9UW0LMkXXoi/oVO7HmloTMn9c1tUZO','user11'),(12,'$2a$10$cR1B./vzfoFdxeTzv0.JHe.Zwa8NiBojPdyS9yRGv.HmmxqU73nDG','user12'),(13,'$2a$10$AeEKC3lscGzNHQqCC1ICcu4Z3uh5TSVNpJNKTFiC3QxFpc.ysl/3O','user13'),(15,'$2a$10$kVVZEV2MuKQR2rsm31j6M.8cstkNs9Qj6dsxNZ3zJJcz.EEdg1.Z6','hoster');
