@@ -4,8 +4,10 @@ import {Page} from "../components/Page.jsx";
 import {useParams} from "react-router-dom";
 import {forwardRef, useLayoutEffect, useRef, useState} from "react";
 import clsx from "clsx";
-import {PrimaryButton} from "../components/Button.jsx";
+import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {ArrowPathIcon} from "@heroicons/react/24/outline/index.js";
+import {ActionsContainer, Modal, Title} from "../components/modal/Modal.jsx";
+import {Input} from "../components/Input.jsx";
 
 
 const nodes = [
@@ -40,6 +42,7 @@ const nodes = [
 ]
 
 
+
 const Player = ({children}) => {
     return (
         <div className={'ps-2 pe-1 flex justify-between text-gray-900 bg-gray-normal'}>
@@ -50,7 +53,7 @@ const Player = ({children}) => {
 const Root = forwardRef(function Root({className, ...props}, ref) {
     return (
         <div ref={ref}
-             className={clsx(className, `flex flex-col border-e-primary border-e-4 border-s-primary border-s-4 gap-[0.8px] w-[240px] shadow-2xl`)}
+             className={clsx(className, `cursor-pointer flex flex-col border-e-primary border-e-4 border-s-primary border-s-4 gap-[0.8px] w-[240px] shadow-2xl`)}
              {...props}
         />
     )
@@ -71,12 +74,65 @@ const Column = forwardRef(function Column({className, count, style, ...props}, r
     )
 })
 
+const Node = ({node, nodeCb}) => {
+    const [open, setOpen] = useState(false)
+    const onClose = (e) => {
+        setOpen(false)
+    }
+    const onSubmit = e => {
+        e.preventDefault()
+        onClose()
+    }
+    return (
+        <Brick.Root onClick={() => setOpen(true)} key={node.id} ref={(el) => nodeCb(node, el)}>
+            <Brick.Player>
+                <div>
+                    {node.player1.name}
+                </div>
+                <div>
+                    {node.player1.value}
+                </div>
+            </Brick.Player>
+            {
+                node.player2 ? (
+                    <Brick.Player>
+                        <div>
+                            {node.player2.name}
+                        </div>
+                        <div>
+                            {node.player2.value}
+                        </div>
+                    </Brick.Player>
+                ) : null
+            }
+            <Modal isOpen={open} onClose={onClose}>
+                <Title>
+                    Результаты матча
+                </Title>
+                <div className={'mt-4 flex flex-col gap-4'}>
+                    <Input placeholder={'Счет 1 команды'}/>
+                    <Input placeholder={'Счет 2 команды'}/>
+                </div>
+                <ActionsContainer>
+                    <WhiteButton type={'button'} onClick={onClose}>
+                        Отмена
+                    </WhiteButton>
+                    <PrimaryButton onClick={onSubmit}>
+                        Сохранить
+                    </PrimaryButton>
+                </ActionsContainer>
+            </Modal>
+        </Brick.Root>
+    )
+}
 
 export const TournamentGrid = () => {
+    const {id} = useParams()
+
+
     const nodesRef = useRef(new Map())
     const containerElement = useRef()
     const [lines, setLines] = useState([])
-    const params = useParams()
     useLayoutEffect(() => {
         const _lines = []
         const containerRect = containerElement.current.getBoundingClientRect()
@@ -121,45 +177,7 @@ export const TournamentGrid = () => {
                     </PrimaryButton>
                     <div className={'mt-10 min-w-full min-h-screen overflow-x-scroll'}>
                         <div className={'relative h-[70vh] overflow-x-scroll'}>
-                            <div ref={containerElement} className={'p-8 flex gap-8'}>
-                                {
-                                    nodes.map((col, count) => {
-                                        return (
-                                            <Column key={col.name} count={count}>
-                                                {
-                                                    col.elements.map(node => {
-                                                        return (
-                                                            <Brick.Root key={node.id} ref={(el) => nodeCb(node, el)}>
-                                                                <Brick.Player>
-                                                                    <div>
-                                                                        {node.player1.name}
-                                                                    </div>
-                                                                    <div>
-                                                                        {node.player1.value}
-                                                                    </div>
-                                                                </Brick.Player>
-                                                                {
-                                                                    node.player2 ? (
-                                                                        <Brick.Player>
-                                                                            <div>
-                                                                                {node.player2.name}
-                                                                            </div>
-                                                                            <div>
-                                                                                {node.player2.value}
-                                                                            </div>
-                                                                        </Brick.Player>
-                                                                    ) : null
-                                                                }
-                                                            </Brick.Root>
-                                                        )
-                                                    })
-                                                }
-                                            </Column>
-                                        )
-                                    })
-                                }
-                            </div>
-                            <svg className={'absolute inset-0 w-full h-full text-primary'}>
+                            <svg className={'absolute inset-0 w-full h-full text-primary z-0'}>
                                 {
                                     lines.map(line => {
                                         return (
@@ -169,6 +187,21 @@ export const TournamentGrid = () => {
                                     })
                                 }
                             </svg>
+                            <div ref={containerElement} className={'absolute p-8 flex gap-8 z-10'}>
+                                {
+                                    nodes.map((col, count) => {
+                                        return (
+                                            <Column key={col.name} count={count}>
+                                                {
+                                                    col.elements.map(node => {
+                                                        return <Node key={node.id} node={node} nodeCb={nodeCb}/>
+                                                    })
+                                                }
+                                            </Column>
+                                        )
+                                    })
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
