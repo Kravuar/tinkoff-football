@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.AuthService;
 import net.kravuar.tinkofffootball.application.services.CookieService;
-import net.kravuar.tinkofffootball.application.services.UserService;
 import net.kravuar.tinkofffootball.domain.model.dto.SignInFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.SignUpFormDTO;
 import net.kravuar.tinkofffootball.domain.model.dto.UserInfoDTO;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final UserService userService;
     private final CookieService cookieService;
 
 
@@ -37,10 +35,11 @@ public class AuthController {
     }
 
 
-    /**
-     * Обновление jwt (возвращает jwt cookie set).
-     *
-     */
+    @Operation(summary = "Обновление JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешное обновление, jwt cookie получены."),
+            @ApiResponse(responseCode = "403", description = "Отсутствует refresh token"),
+    })
     @GetMapping("/refresh")
     public void refresh(HttpServletRequest request, HttpServletResponse response) {
         var loggedUser = authService.refresh(request);

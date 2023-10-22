@@ -29,6 +29,16 @@ public class TournamentController {
         return tournamentService.getTournamentList(pageSize, page);
     }
 
+    @GetMapping("/myHistory")
+    public TournamentListPageDTO getHistoryTournamentList(@AuthenticationPrincipal UserInfo userInfo) {
+        return tournamentService.getHistoryTournaments(userInfo);
+    }
+
+    @GetMapping("/myHistory/{pageSize}/{page}")
+    public TournamentListPageDTO getHistoryTournamentList(@AuthenticationPrincipal UserInfo userInfo, @PathVariable @Min(1) int pageSize, @PathVariable @Min(0) int page) {
+        return tournamentService.getHistoryTournamentsPageable(userInfo, pageSize, page);
+    }
+
     @PostMapping("/create")
     public void createTournament(@RequestBody @Valid TournamentFormDTO tournamentForm, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.createTournament(tournamentForm, userInfo);

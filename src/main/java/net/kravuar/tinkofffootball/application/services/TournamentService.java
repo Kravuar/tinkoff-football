@@ -237,4 +237,12 @@ public class TournamentService {
     public BracketDTO getBracket(Long tournamentId) {
         return new BracketDTO(findOrElseThrow(tournamentId));
     }
+
+    public TournamentListPageDTO getHistoryTournaments(UserInfo userInfo) {
+        return new TournamentListPageDTO(tournamentRepo.findAllByParticipant(userInfo.getId()));
+    }
+
+    public TournamentListPageDTO getHistoryTournamentsPageable(UserInfo userInfo, int pageSize, int page) {
+        return new TournamentListPageDTO(tournamentRepo.findAllByParticipantPageable(userInfo.getId(), Pageable.ofSize(pageSize).withPage(page)));
+    }
 }
