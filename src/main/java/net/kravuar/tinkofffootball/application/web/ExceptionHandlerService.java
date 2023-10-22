@@ -3,15 +3,14 @@ package net.kravuar.tinkofffootball.application.web;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import net.kravuar.tinkofffootball.domain.model.exceptions.ResourceNotFoundException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
@@ -38,24 +37,22 @@ public class ExceptionHandlerService {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public List<String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        var errors = ex.getBindingResult().getFieldErrors().stream()
+        return ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> String.format("%s: %s", fieldError.getField(), fieldError.getDefaultMessage()))
                 .toList();
-        return errors;
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public List<String> handleConstraintViolation(ConstraintViolationException ex) {
-        var errors = ex.getConstraintViolations().stream()
+        return ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
                 .toList();
-        return errors;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleOther(Exception exception) {
+    public String handleOther() {
         return "Что-то плохое случилось на сервере.";
     }
 }
