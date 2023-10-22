@@ -33,8 +33,8 @@ function Root() {
                             Попробовать бесплатно
                         </PrimaryButton>
                     </Link>
-                    <div className={' max-w-full h-auto overflow-hidden'}>
-                        <img className={'mt-8 rounded-2xl overflow-hidden object-cover object-top max-w-full h-auto'} src={soccer_cloud_high} alt={''}/>
+                    <div className={'mt-48 max-w-full h-auto overflow-hidden'}>
+                        <img className={'rounded-2xl overflow-hidden object-cover object-top max-w-full h-auto'} src={soccer_nolegs} alt={''}/>
                     </div>
                 </div>
             </Page>
