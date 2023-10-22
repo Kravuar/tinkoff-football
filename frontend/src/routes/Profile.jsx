@@ -119,6 +119,7 @@ const Team = ({team}) => {
     const can_accept = team.secondPlayerStatus === 'INVITED' && team.secondPlayer.id === user.id
     const can_cancel = team.secondPlayerStatus === 'INVITED' && team.captain.id === user.id
     const can_reject = team.secondPlayerStatus === 'INVITED' && team.secondPlayer.id === user.id
+    const can_leave = team.secondPlayerStatus !== 'INVITED'
     console.log(can_accept, can_cancel, can_reject, user.id, team.secondPlayer.id)
 
     const client = useQueryClient()
@@ -128,6 +129,11 @@ const Team = ({team}) => {
         }
     })
     const cancelMutation = useMutation((id) => api.delete(`/teams/${id}/declineInvite`), {
+        onSettled: () => {
+            client.invalidateQueries(['teams'])
+        }
+    })
+    const leaveMutation = useMutation((id) => api.delete(`/team/${id}/leave`), {
         onSettled: () => {
             client.invalidateQueries(['teams'])
         }
@@ -181,6 +187,16 @@ const Team = ({team}) => {
                                                title={'Отказаться от присоединения к команде'}
                                                subtitle={'Вы уверены, что хотите оказаться?'}>
                                         <XMarkIcon title={'Отказаться'}
+                                                   className="h-6 w-6 stroke-2 text-red-500"/>
+                                    </TeamModal>
+                                ) : null
+                            }
+                            {
+                                can_leave ? (
+                                    <TeamModal onSubmit={() => leaveMutation.mutate(team.id)}
+                                               title={'Покинуть команду'}
+                                               subtitle={'Вы уверены, что покинуть команду?'}>
+                                        <XMarkIcon title={'Покинуть команду'}
                                                    className="h-6 w-6 stroke-2 text-red-500"/>
                                     </TeamModal>
                                 ) : null
