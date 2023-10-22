@@ -16,6 +16,7 @@ import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
 import {useState} from "react";
 import {Spinner} from "../components/Spinner.jsx";
+import clsx from "clsx";
 
 // const tournaments = [
 //     {name: 'Big tournament', owner: "danil#4122", status: "active"},
@@ -38,7 +39,7 @@ import {Spinner} from "../components/Spinner.jsx";
 const Table = () => {
     const client = useQueryClient()
     const [page, setPage] = useState(0)
-    const {data, isLoading, isError} = useQuery(['tournaments', page],
+    const {data, isLoading, isError, isFetching} = useQuery(['tournaments', page],
         async () => (await api.get(`/tournaments/list/10/${page}`)).data)
     const onUpdate = () => {
         client.invalidateQueries(['tournaments'])
@@ -86,7 +87,7 @@ const Table = () => {
                     </button>
                 </div>
                 <PrimaryButton onClick={onUpdate}>
-                    <ArrowPathIcon className="animate-spin h-4 md:h-6 w-4 md:w-6 text-gray-500 stroke-2"/>
+                    <ArrowPathIcon className={clsx("h-4 md:h-6 w-4 md:w-6 text-gray-500 stroke-2", isLoading || isFetching ? "animate-spin" : null)}/>
                 </PrimaryButton>
             </div>
             <div className={'mt-4 flex flex-col gap-4'}>

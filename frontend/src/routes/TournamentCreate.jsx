@@ -5,11 +5,12 @@ import {PrimaryButton} from "../components/Button.jsx";
 import {Input} from "../components/Input.jsx";
 import {useForm} from "react-hook-form";
 import {data} from "autoprefixer";
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
 import {useNavigate} from "react-router-dom";
 
 export const TournamentCreate = () => {
+    const client = useQueryClient()
     const navigate = useNavigate()
     const mutation = useMutation(['tournaments'],
         (data) => api.post("/tournaments/create", data))
@@ -26,6 +27,7 @@ export const TournamentCreate = () => {
             })),
         }
         mutation.mutateAsync(withMatches).then(() => {
+            client.invalidateQueries(['tournaments'])
             navigate('/tournaments')
         })
     }
