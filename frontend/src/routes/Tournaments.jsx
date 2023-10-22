@@ -57,7 +57,7 @@ const Table = () => {
     return (
         <div
             className={'mt-14 w-full p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
-            <div className={'flex justify-end gap-4'}>
+            <div className={'flex justify-end items-center gap-4'}>
                 {
                     data?.totalTournaments ? (
                         <div>
