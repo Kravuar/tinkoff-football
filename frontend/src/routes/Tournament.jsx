@@ -9,6 +9,8 @@ import {api} from "../api.js";
 import Select from "react-select";
 import {useTeams} from "../queries.js";
 import {Spinner} from "../components/Spinner.jsx";
+import {Td, Th, ThTd, Tr} from "../components/table/Table.jsx";
+import {CalendarDaysIcon, PlayIcon, TrophyIcon} from "@heroicons/react/24/outline/index.js";
 
 const tournament = {
     name: "Большой турнир", status: "opened"
@@ -78,27 +80,29 @@ export const Tournament = () => {
                             <h1 className={'font-bold text-[42px] text-center'}>
                                 Турнир "{tournament.title}#{id}"
                             </h1>
-                            <div className={'mt-4'}>
-                                {{
-                                    opened: "Турнир открыт", active: "Турнир продолжается", finished: "Турнир завершен"
-                                }[tournament.status]}
+                            <div className={'mt-4 flex justify-between gap-6 text-lg'}>
+                                <div>
+                                    {{
+                                        PENDING: "Турнир открыт", ACTIVE: "Турнир продолжается",
+                                        FINISHED: "Турнир завершен", CANCELED: "Турнир отменен"
+                                    }[tournament.status]}
+                                </div>
+                                <div>
+                                    Владелец: {tournament.owner.username}
+                                </div>
                             </div>
-                            <div className={'mt-4'}>
-                                Участников: {tournament.participants} / {tournament.maxParticipants}
-                            </div>
-                            {/* список команд */}
-                            <div>
-
-                            </div>
-                            <Link className={'mt-8'} to={`/tournaments/${id}/grid`}>
+                            <Link className={'mt-4'} to={`/tournaments/${id}/grid`}>
                                 <PrimaryButton>
                                     Открыть сетку
                                 </PrimaryButton>
                             </Link>
 
-                            <div className={'mt-12'}>
-                                {/* принять участие */}
-                                <form className={'md:w-[360px] flex gap-1 items-center'}
+                            {/* список команд */}
+                            <div className={'mt-16 w-full sm:w-[600px] p-3 md:p-8 bg-white rounded-2xl shadow-lg'}>
+                                <div className={''}>
+                                    Участников: {tournament.participants.length}/{tournament.maxParticipants}
+                                </div>
+                                <form className={'w-full flex gap-1 items-center'}
                                       onSubmit={handleSubmit(onJoin)}>
                                     {/*  выбор команды  */}
                                     <div className={'w-full'}>
@@ -122,10 +126,53 @@ export const Tournament = () => {
                                         }
                                     </PrimaryButton>
                                 </form>
-                                {/* открыть сетку */}
-                                <div>
+                                {
+                                    tournament?.participants.length > 0 ? (
+                                        <div className={'mt-4 flex flex-col gap-4'}>
+                                            <div className="overflow-x-auto shadow-lg sm:rounded-2xl">
+                                                <table className="w-full text-sm text-left text-gray-500">
+                                                    <thead
+                                                        className="text-xs text-gray-700 uppercase bg-gray-50">
+                                                    <Tr>
+                                                        <Th>
+                                                            Название команды
+                                                        </Th>
+                                                        <Th>
+                                                            Капитан
+                                                        </Th>
+                                                        <Th>
 
-                                </div>
+                                                        </Th>
+                                                    </Tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {
+                                                        tournament?.participants.map(team => {
+                                                            return (
+                                                                <Tr className="bg-white border-b odd:bg-white even:bg-gray-50"
+                                                                    key={team.id}>
+                                                                    <ThTd>
+                                                                        {team.name}
+                                                                    </ThTd>
+                                                                    <Td>
+                                                                        {team.captain.username}
+                                                                    </Td>
+                                                                    <Td>
+                                                                    </Td>
+                                                                </Tr>
+                                                            )
+                                                        })
+                                                    }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            Пока никто не участвует :)
+                                        </div>
+                                    )
+                                }
                             </div>
                         </>
                     )

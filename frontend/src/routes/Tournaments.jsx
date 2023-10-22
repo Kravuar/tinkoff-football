@@ -131,7 +131,7 @@ const Table = () => {
                                                     </Link>
                                                 </ThTd>
                                                 <Td>
-                                                    {tournament.owner}
+                                                    {tournament.owner.name}
                                                 </Td>
                                                 <Td>
                                                     {
