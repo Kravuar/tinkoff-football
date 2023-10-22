@@ -48,7 +48,7 @@ public class MatchService {
                 );
         if (newMatch.getTeam1() == null)
             newMatch.setTeam1(teamService.getReference(winner));
-        else if (newMatch.getTeam2() != null)
+        else if (newMatch.getTeam2() == null)
             newMatch.setTeam2(teamService.getReference(winner));
         else
             throw new IllegalArgumentException("Матч уже сформирован.");

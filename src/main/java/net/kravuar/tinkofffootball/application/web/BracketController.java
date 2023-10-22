@@ -33,7 +33,7 @@ public class BracketController {
 
     @Operation(summary = "Подписка на SSE обновления сетки", description = "Открывает SSE поток для ивентов обновления сетки.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешная авторизация, jwt cookie получены."),
+            @ApiResponse(responseCode = "200", description = "Поток открыт."),
             @ApiResponse(responseCode = "403", description = "Неправильный пароль"),
     })
     @GetMapping("/{tournamentId}/bracket/subscribe")
