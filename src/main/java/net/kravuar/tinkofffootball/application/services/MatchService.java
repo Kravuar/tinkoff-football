@@ -40,6 +40,8 @@ public class MatchService {
 
     public void advanceWinner(long tournamentId, int bracketPosition, long winner) {
         var newBracketPosition = (bracketPosition - 1) / 2;
+        if (bracketPosition == 0)
+            return;
         if (newBracketPosition < 0)
             throw new IllegalArgumentException("Нельзя продвинуться дальше финала.");
         var newMatch = matchRepo.findMatchByTournamentIdAndBracketPosition(tournamentId, newBracketPosition)
