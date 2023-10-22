@@ -8,6 +8,8 @@ import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {ArrowPathIcon} from "@heroicons/react/24/outline/index.js";
 import {ActionsContainer, Modal, Title} from "../components/modal/Modal.jsx";
 import {Input} from "../components/Input.jsx";
+import {useQuery} from "@tanstack/react-query";
+import {api} from "../api.js";
 
 
 const nodes = [
@@ -128,6 +130,10 @@ const Node = ({node, nodeCb}) => {
 
 export const TournamentGrid = () => {
     const {id} = useParams()
+
+    const {data, isLoading, isError} = useQuery(['tournament-grid', id],
+        async () => (await api.get(`/tournaments/${id}/bracket`)).data)
+    console.log(data)
 
 
     const nodesRef = useRef(new Map())
