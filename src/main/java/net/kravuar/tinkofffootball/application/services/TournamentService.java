@@ -1,6 +1,5 @@
 package net.kravuar.tinkofffootball.application.services;
 
-import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.repo.TournamentParticipantsRepo;
 import net.kravuar.tinkofffootball.application.repo.TournamentRepo;
 import net.kravuar.tinkofffootball.domain.model.dto.*;
@@ -29,18 +28,31 @@ import reactor.core.publisher.FluxSink;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
 @Transactional
 public class TournamentService {
-    private final Map<Long, SubscribableChannel> activeTournaments = new ConcurrentHashMap<>();
+    private final Map<Long, SubscribableChannel> activeTournaments;
     private final ApplicationEventPublisher publisher;
     private final TournamentRepo tournamentRepo;
     private final TournamentParticipantsRepo tournamentParticipantsRepo;
     private final TeamService teamService;
     private final MatchService matchService;
     private final UserService userService;
+
+    public TournamentService(ApplicationEventPublisher publisher, TournamentRepo tournamentRepo, TournamentParticipantsRepo tournamentParticipantsRepo, TeamService teamService, MatchService matchService, UserService userService) {
+        this.publisher = publisher;
+        this.tournamentRepo = tournamentRepo;
+        this.tournamentParticipantsRepo = tournamentParticipantsRepo;
+        this.teamService = teamService;
+        this.matchService = matchService;
+        this.userService = userService;
+        this.activeTournaments = new ConcurrentHashMap<>(
+                tournamentRepo.findAllByStatusIs(Tournament.TournamentStatus.ACTIVE).stream()
+                        .collect(Collectors.toMap(Tournament::getId, (tournament) -> MessageChannels.publishSubscribe().getObject()))
+        );
+    }
 
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(Long tournamentId) {
         return Flux.create(sink -> {
@@ -224,5 +236,13 @@ public class TournamentService {
 
     public BracketDTO getBracket(Long tournamentId) {
         return new BracketDTO(findOrElseThrow(tournamentId));
+    }
+
+    public TournamentListPageDTO getHistoryTournaments(UserInfo userInfo) {
+        return new TournamentListPageDTO(tournamentRepo.findAllByParticipant(userInfo.getId()));
+    }
+
+    public TournamentListPageDTO getHistoryTournamentsPageable(UserInfo userInfo, int pageSize, int page) {
+        return new TournamentListPageDTO(tournamentRepo.findAllByParticipantPageable(userInfo.getId(), Pageable.ofSize(pageSize).withPage(page)));
     }
 }
