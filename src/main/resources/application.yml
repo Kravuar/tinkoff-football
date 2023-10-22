@@ -8,6 +8,7 @@ web:
     - "/swagger-ui/**"
     - "/api/teams/{id}/info"
     - "/api/tournaments/list/**"
+    - "/api/tournaments/*/bracket"
     - "/api/tournaments/*/bracket/subscribe/*"
 
 spring:
