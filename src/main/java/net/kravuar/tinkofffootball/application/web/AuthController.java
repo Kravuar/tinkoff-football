@@ -27,6 +27,7 @@ public class AuthController {
     @Operation(summary = "Регистрация")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная регистрация, jwt cookie получены."),
+            @ApiResponse(responseCode = "400", description = "Неподходящие данные"),
     })
     @PostMapping("/signUp")
     public UserInfoDTO signUp(@RequestBody @Valid SignUpFormDTO signUpForm, HttpServletResponse response) {

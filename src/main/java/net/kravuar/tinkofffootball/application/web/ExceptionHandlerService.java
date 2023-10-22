@@ -36,6 +36,7 @@ public class ExceptionHandlerService {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public List<String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         var errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> String.format("%s: %s", fieldError.getField(), fieldError.getDefaultMessage()))
@@ -44,6 +45,7 @@ public class ExceptionHandlerService {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public List<String> handleConstraintViolation(ConstraintViolationException ex) {
         var errors = ex.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
@@ -52,6 +54,7 @@ public class ExceptionHandlerService {
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleOther(Exception exception) {
         return "Что-то плохое случилось на сервере.";
     }

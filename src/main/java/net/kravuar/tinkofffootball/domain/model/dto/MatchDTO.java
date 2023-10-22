@@ -15,8 +15,10 @@ public class MatchDTO {
     public MatchDTO(Match match) {
         this.id = match.getId();
         this.bracketPosition = match.getBracketPosition();
-        this.team1DTO = new MatchTeamDTO(match.getTeam1().getId(), match.getTeam1().getName(), match.getTeam1Score());
-        this.team2DTO = new MatchTeamDTO(match.getTeam2().getId(), match.getTeam2().getName(), match.getTeam2Score());
+        if (match.getTeam1() != null)
+            this.team1DTO = new MatchTeamDTO(match.getTeam1().getId(), match.getTeam1().getName(), match.getTeam1Score());
+        if (match.getTeam2() != null)
+            this.team2DTO = new MatchTeamDTO(match.getTeam2().getId(), match.getTeam2().getName(), match.getTeam2Score());
         this.bestOf = match.getBestOf();
         this.prize = match.getPrize();
     }
