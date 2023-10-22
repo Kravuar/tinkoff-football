@@ -1,5 +1,8 @@
 package net.kravuar.tinkofffootball.application.web;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.kravuar.tinkofffootball.application.services.TournamentService;
@@ -18,17 +21,21 @@ import reactor.core.publisher.Flux;
 public class BracketController {
     private final TournamentService tournamentService;
 
+    @Operation(summary = "Получение сетки", description = "Получить текущее состояние сетки.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно, "),
+            @ApiResponse(responseCode = "403", description = "Неправильный пароль"),
+    })
     @GetMapping("/{tournamentId}/bracket")
     public BracketDTO getBracket(@PathVariable Long tournamentId) {
         return tournamentService.getBracket(tournamentId);
     }
 
-    /**
-     * SSE Подписка на обновления сетки.
-     *
-     * @param tournamentId id турнира.
-     * @return Поток SSE.
-     */
+    @Operation(summary = "Подписка на SSE обновления сетки", description = "Открывает SSE поток для ивентов обновления сетки.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешная авторизация, jwt cookie получены."),
+            @ApiResponse(responseCode = "403", description = "Неправильный пароль"),
+    })
     @GetMapping("/{tournamentId}/bracket/subscribe")
     public Flux<ServerSentEvent<BracketEvent>> subscribeToBracketUpdates(@PathVariable Long tournamentId) {
         return tournamentService.subscribeToBracketUpdates(tournamentId);

@@ -58,7 +58,7 @@ public class TeamService {
 
     public void deleteTeam(Long teamId, UserInfo userInfo) {
         var team = findOrElseThrow(teamId);
-        if (!Objects.equals(userInfo.getId(), team.getCaptain().getId()))
+        if (!Objects.equals(userInfo.getId(), team.getCaptain().getId()) && !Objects.equals(userInfo.getId(), team.getSecondPlayer().getId()))
             throw new AccessDeniedException("Это не ваша команда");
         teamRepo.delete(team);
     }

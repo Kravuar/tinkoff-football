@@ -22,7 +22,7 @@ public class AuthController {
     private final CookieService cookieService;
 
 
-    @Operation(summary = "Регистрация")
+    @Operation(summary = "Регистрация", description = "Создать аккаунт.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная регистрация, jwt cookie получены."),
             @ApiResponse(responseCode = "400", description = "Неподходящие данные"),
@@ -35,7 +35,7 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Обновление JWT")
+    @Operation(summary = "Обновление JWT", description = "Обновить пару JWT токенов.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешное обновление, jwt cookie получены."),
             @ApiResponse(responseCode = "403", description = "Отсутствует refresh token"),
@@ -46,11 +46,11 @@ public class AuthController {
         cookieService.getJWTCookies(loggedUser.getAccessToken(), loggedUser.getRefreshToken()).forEach(response::addCookie);
     }
 
-    /**
-     * Авторизация (возвращает jwt cookie set).
-     *
-     * @param signInForm форма авторизации.
-     */
+    @Operation(summary = "Авторизация", description = "Войти в аккаунт.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешная авторизация, jwt cookie получены."),
+            @ApiResponse(responseCode = "403", description = "Неправильный пароль"),
+    })
     @PostMapping("/signIn")
     public UserInfoDTO signIn(@RequestBody @Valid SignInFormDTO signInForm, HttpServletResponse response) {
         var loggedUser = authService.singIn(signInForm);
@@ -58,10 +58,10 @@ public class AuthController {
         return new UserInfoDTO(loggedUser.getUserInfo());
     }
 
-    /**
-     * Выход из аккаунта (удаляет jwt cookie set).
-     *
-     */
+    @Operation(summary = "Выход из аккаунта", description = "Выйти из аккаунта.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "JWT cookie удалены."),
+    })
     @GetMapping("/logout")
     public void logout(HttpServletResponse response) {
         cookieService.getDeleteCookies().forEach(response::addCookie);
