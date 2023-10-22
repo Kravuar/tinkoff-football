@@ -50,6 +50,9 @@ export const Tournament = () => {
         }
     })
 
+    const {data: tournament, isLoading, isError} = useQuery(['tournament', id],
+        async () => (await api.get(`/tournaments/${id}`)).data)
+
     const onJoin = (data) => {
         console.log(data)
         joinMutation.mutate(data.team.id)
@@ -58,54 +61,75 @@ export const Tournament = () => {
     return (<App>
         <Header/>
         <Page>
-            <div className={'mt-[100px] flex flex-col items-center w-full min-h-[85vh]'}>
-                <h1 className={'font-bold text-[42px] text-center'}>
-                    Турнир "{tournament.name}#{id}"
-                </h1>
-                <div className={'mt-4'}>
-                    {{
-                        opened: "Турнир открыт", active: "Турнир продолжается", finished: "Турнир завершен"
-                    }[tournament.status]}
-                </div>
-                {/* список команд */}
-                <div>
+            <div className={'pt-[100px] flex flex-col items-center w-full'}>
+                {
+                    isLoading || isError ? (
+                        isLoading ? (
+                            <div className={'w-full flex justify-center items-center'}>
+                                <Spinner/>
+                            </div>
+                        ) : (
+                            <div>
+                                Ошибка загрузки турнира
+                            </div>
+                        )
+                    ) : (
+                        <>
+                            <h1 className={'font-bold text-[42px] text-center'}>
+                                Турнир "{tournament.title}#{id}"
+                            </h1>
+                            <div className={'mt-4'}>
+                                {{
+                                    opened: "Турнир открыт", active: "Турнир продолжается", finished: "Турнир завершен"
+                                }[tournament.status]}
+                            </div>
+                            <div className={'mt-4'}>
+                                Участников: {tournament.participants} / {tournament.maxParticipants}
+                            </div>
+                            {/* список команд */}
+                            <div>
 
-                </div>
-                <Link className={'mt-8'} to={`/tournaments/${id}/grid`}>
-                    <PrimaryButton>
-                        Открыть сетку
-                    </PrimaryButton>
-                </Link>
+                            </div>
+                            <Link className={'mt-8'} to={`/tournaments/${id}/grid`}>
+                                <PrimaryButton>
+                                    Открыть сетку
+                                </PrimaryButton>
+                            </Link>
 
-                <div className={'mt-12'}>
-                    {/* принять участие */}
-                    <form className={'md:w-[360px] flex gap-1 items-center'} onSubmit={handleSubmit(onJoin)}>
-                        {/*  выбор команды  */}
-                        <div className={'w-full'}>
-                            <Controller rules={{required: true}} control={control} name={'team'}
-                                        defaultValue={null}
-                                        render={({field}) => (
-                                            <TeamSelect value={field.value} onChange={val => field.onChange(val)}/>
-                                        )}
-                            />
-                        </div>
-                        <PrimaryButton>
-                            {
-                                joinMutation.isLoading ? (
-                                    <Spinner/>
-                                ) : (
-                                    <div>
-                                        Участвовать
+                            <div className={'mt-12'}>
+                                {/* принять участие */}
+                                <form className={'md:w-[360px] flex gap-1 items-center'}
+                                      onSubmit={handleSubmit(onJoin)}>
+                                    {/*  выбор команды  */}
+                                    <div className={'w-full'}>
+                                        <Controller rules={{required: true}} control={control} name={'team'}
+                                                    defaultValue={null}
+                                                    render={({field}) => (
+                                                        <TeamSelect value={field.value}
+                                                                    onChange={val => field.onChange(val)}/>
+                                                    )}
+                                        />
                                     </div>
-                                )
-                            }
-                        </PrimaryButton>
-                    </form>
-                    {/* открыть сетку */}
-                    <div>
+                                    <PrimaryButton>
+                                        {
+                                            joinMutation.isLoading ? (
+                                                <Spinner/>
+                                            ) : (
+                                                <div>
+                                                    Участвовать
+                                                </div>
+                                            )
+                                        }
+                                    </PrimaryButton>
+                                </form>
+                                {/* открыть сетку */}
+                                <div>
 
-                    </div>
-                </div>
+                                </div>
+                            </div>
+                        </>
+                    )
+                }
             </div>
         </Page>
     </App>)
