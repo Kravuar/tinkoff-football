@@ -46,5 +46,6 @@ public class MatchService {
             newMatch.setTeam2(teamService.getReference(winner));
         else
             throw new IllegalArgumentException("Матч уже сформирован.");
+        matchRepo.save(newMatch);
     }
 }

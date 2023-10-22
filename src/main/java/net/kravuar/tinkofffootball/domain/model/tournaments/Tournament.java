@@ -9,9 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.user.User;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,7 +41,7 @@ public class Tournament {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     private Set<Match> matches = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     private User owner;
 
     @Column(nullable = false, updatable = false)
@@ -56,7 +60,7 @@ public class Tournament {
 //    TODO: Add denormalized data like amount of participants (DONE), prize pool...
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
-    private Set<TournamentParticipant> tournamentParticipants;
+    private List<TournamentParticipant> tournamentParticipants = new ArrayList<>();
 
     @Column(nullable = false)
     private int participants = 0;

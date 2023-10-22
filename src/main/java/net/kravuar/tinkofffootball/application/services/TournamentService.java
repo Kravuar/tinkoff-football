@@ -26,6 +26,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
@@ -116,10 +117,10 @@ public class TournamentService {
                 }
                 case ACTIVE -> {
                     var match = matchService.findActiveMatch(tournamentId, teamId);
-                    long winner = -1;
-                    if (team.getId() == match.getTeam1().getId())
+                    long winner;
+                    if (Objects.equals(team.getId(), match.getTeam1().getId()))
                         winner = match.getTeam2().getId();
-                    else if (team.getId() == match.getTeam2().getId())
+                    else
                         winner = match.getTeam1().getId();
                     publisher.publishEvent(new ScoreUpdateEvent(
                             match.getTeam1Score(),

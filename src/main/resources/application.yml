@@ -16,7 +16,11 @@ spring:
     username: root
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mod: always
   jpa:
+    defer-datasource-initialization: true
     show-sql: true
     hibernate:
       ddl-auto: update
@@ -24,10 +28,10 @@ spring:
       hibernate:
         format_sql: true
         default_schema: tinkoff
-  mvc:
-    log-request-details=true:
-logging:
-  level:
-    org:
-      springframework:
-        web: DEBUG
+#  mvc:
+#    log-request-details: true
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: DEBUG
