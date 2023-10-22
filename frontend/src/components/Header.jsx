@@ -16,7 +16,7 @@ const useLogoutMutation = () => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: () => api.get("/auth/logout"),
-        onSuccess: async () => {
+        onSettled: async () => {
             invalidateUser()
         }
     })
