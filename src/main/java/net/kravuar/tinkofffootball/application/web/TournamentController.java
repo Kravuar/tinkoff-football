@@ -49,4 +49,9 @@ public class TournamentController {
     public void leaveTournament(@PathVariable Long tournamentId, @PathVariable Long teamId, @AuthenticationPrincipal UserInfo userInfo) {
         tournamentService.leaveTournament(tournamentId, teamId, userInfo);
     }
+
+    @PutMapping("/{tournamentId}/cancel/")
+    public void cancelTournament(@PathVariable Long tournamentId, @AuthenticationPrincipal UserInfo userInfo) {
+        tournamentService.cancelTournament(tournamentId, userInfo);
+    }
 }

@@ -179,6 +179,8 @@ public class TournamentService {
         }
 
         matchService.saveAll(matches);
+        tournament.setStatus(Tournament.TournamentStatus.ACTIVE);
+        tournamentRepo.save(tournament);
         activeTournaments.put(tournamentId, MessageChannels.publishSubscribe().getObject());
 
         var lastMatch = matches.get(matches.size() - 1);
@@ -192,12 +194,32 @@ public class TournamentService {
             ));
     }
 
+    public void cancelTournament(Long tournamentId, UserInfo userInfo) {
+        var tournament = findOrElseThrow(tournamentId);
+        if (!Objects.equals(tournament.getOwner().getId(), userInfo.getId()))
+            throw new AccessDeniedException("Вы не владелец турнира.");
+        if (tournament.getStatus() != Tournament.TournamentStatus.ACTIVE && tournament.getStatus() != Tournament.TournamentStatus.PENDING)
+            throw new IllegalArgumentException("Турнир нельзя отменить.");
+        finishTournament(tournamentId, Tournament.TournamentStatus.CANCELED);
+    }
+
+    public void finishTournament(Long tournamentId, Tournament.TournamentStatus status) {
+        if (status != Tournament.TournamentStatus.FINISHED && status != Tournament.TournamentStatus.CANCELED)
+            throw new IllegalArgumentException("Статус не является завершающим");
+        var tournament = findOrElseThrow(tournamentId);
+        tournament.setStatus(status);
+        tournamentRepo.save(tournament);
+        activeTournaments.remove(tournamentId);
+    }
+
     @EventListener(ScoreUpdateEvent.class)
     public void handleScoreUpdate(ScoreUpdateEvent event) {
         if (event.getWinner() != -1)
             matchService.advanceWinner(event.getTournamentId(), event.getBracketPosition(), event.getWinner());
         var channel = activeTournaments.get(event.getTournamentId());
         channel.send(new GenericMessage<>(event));
+        if (event.getBracketPosition() == 0 && event.getWinner() != -1)
+            finishTournament(event.getTournamentId(), Tournament.TournamentStatus.FINISHED);
     }
 
     public BracketDTO getBracket(Long tournamentId) {
