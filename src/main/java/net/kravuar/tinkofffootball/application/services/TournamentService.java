@@ -98,7 +98,6 @@ public class TournamentService {
     }
 
     public synchronized void joinTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
-//        TODO: Check if already in tournament
         var tournament = findOrElseThrow(tournamentId);
         if (tournament.getStatus() != Tournament.TournamentStatus.PENDING)
             throw new IllegalArgumentException("Нельзя присоединится к турниру.");
@@ -109,6 +108,9 @@ public class TournamentService {
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Комманда не сформирована.");
         if (!Objects.equals(team.getCaptain().getId(), userInfo.getId()) && !Objects.equals(team.getSecondPlayer().getId(), userInfo.getId()))
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Вы не состоите в данной команде.");
+        var participants = tournament.getTournamentParticipants();
+        if (participants.stream().anyMatch(participant -> Objects.equals(participant.getTeam().getId(), teamId)))
+            throw new IllegalArgumentException("Команда уже учавствует.");
         tournament.setParticipants(tournament.getParticipants() + 1);
         tournamentRepo.save(tournament);
         tournamentParticipantsRepo.save(new TournamentParticipant(tournament, team));
@@ -118,6 +120,8 @@ public class TournamentService {
     public void leaveTournament(Long tournamentId, Long teamId, UserInfo userInfo) {
         var tournament = findOrElseThrow(tournamentId);
         var tournamentStatus = tournament.getStatus();
+        if (tournamentStatus != Tournament.TournamentStatus.ACTIVE && tournamentStatus != Tournament.TournamentStatus.PENDING)
+            throw new IllegalArgumentException("Нельзя выйти из турнира, он завершён.");
         var team = teamService.findOrElseThrow(teamId);
         if (!Objects.equals(team.getCaptain().getId(), userInfo.getId()) || !Objects.equals(team.getSecondPlayer().getId(), userInfo.getId()))
             throw new IllegalArgumentException("Нельзя выйти из турнира. Вы не состоите в данной команде.");
@@ -152,8 +156,14 @@ public class TournamentService {
 
     public void updateScore(Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
         var match = matchService.findOrElseThrow(matchId);
+        if (match.getTournament().getStatus() != Tournament.TournamentStatus.ACTIVE)
+            throw new IllegalArgumentException("Турнир не активен.");
         if (!Objects.equals(match.getTournament().getOwner().getId(), userInfo.getId()))
             throw new AccessDeniedException("Вы не владелец турнира.");
+        if (match.getTeam1() == null || match.getTeam2() == null)
+            throw new IllegalArgumentException("Матч ещё не начат.");
+        if (match.getTeam1Score() > match.getBestOf() / 2 || match.getTeam2Score() > match.getBestOf() / 2)
+            throw new IllegalArgumentException("Матч уже завершён.");
         match.setTeam1Score(matchUpdate.getTeam1Score());
         match.setTeam2Score(matchUpdate.getTeam2Score());
         long winner = -1;
@@ -174,15 +184,16 @@ public class TournamentService {
         var tournament = findOrElseThrow(tournamentId);
         if (!Objects.equals(tournament.getOwner().getId(), userInfo.getId()))
             throw new AccessDeniedException("Вы не владелец турнира.");
+        if (tournament.getStatus() != Tournament.TournamentStatus.PENDING)
+            throw new IllegalArgumentException("Нельзя начать турнир, он либо уже активен, либо завершён.");
 
         var participants = tournamentParticipantsRepo.findAllByTournamentId(tournamentId);
         var participantsCount = participants.size();
         if (participantsCount % 2 == 1)
             participants.add(new TournamentParticipant()); // last match second team
 
-        if (participantsCount < 2) {
+        if (participantsCount < 2)
             throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
-        }
         var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil((double) participantsCount / 2)).first());
         for (var i = 0; i < participantsCount; i += 2) {
             var match = matches.get(i / 2);
