@@ -8,7 +8,6 @@ import net.kravuar.tinkofffootball.domain.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
