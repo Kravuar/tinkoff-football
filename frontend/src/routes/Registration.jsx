@@ -43,7 +43,7 @@ export const Registration = () => {
         <App>
             <Header/>
             <Page>
-                <div className={'max-w-[500px] mx-auto pt-[250px] pb-[300px]'}>
+                <div className={'max-w-[500px] mx-auto pt-[100px] md:pt-[200px]'}>
                     <div className={'p-8 rounded-3xl bg-white shadow-md'}>
                         <form className={'flex flex-col gap-8'} onSubmit={handleSubmit(onSubmit)}>
                             <h1 className={'font-bold text-3xl text-center'}>
@@ -53,11 +53,13 @@ export const Registration = () => {
                             <Input type={'password'}
                                    placeholder={'Пароль'} {...register('password', {required: true})}/>
                             <Input type={'password'}
-                                   placeholder={'Повторите пароль'} {...register('password_confirmation', {required: true, validate: (val) => {
+                                   placeholder={'Повторите пароль'} {...register('password_confirmation', {
+                                required: true, validate: (val) => {
                                     if (watch('password') !== val) {
                                         return "Пароли не совпадают";
                                     }
-                                }})}/>
+                                }
+                            })}/>
 
                             <PrimaryButton disabled={registrationMutation.isLoading}>
                                 <span className={'text-lg font-medium'}>
@@ -65,7 +67,8 @@ export const Registration = () => {
                                 </span>
                                 <span>
                                     {
-                                        registrationMutation.isLoading ? <Spinner/> : <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500 stroke-[3]"/>
+                                        registrationMutation.isLoading ? <Spinner/> :
+                                            <ChevronDoubleRightIcon className="h-6 w-6 text-gray-500 stroke-[3]"/>
                                     }
                                 </span>
                             </PrimaryButton>
@@ -78,9 +81,9 @@ export const Registration = () => {
                             </span>
                         </form>
                         <div className={'text-sm text-gray-400 text-center mt-3'}>
-                                <Link to={'/authorization'}>
-                                    Уже зарегистрированы?
-                                </Link>
+                            <Link to={'/authorization'}>
+                                Уже зарегистрированы?
+                            </Link>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,7 @@ import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
 import {useState} from "react";
 import {Spinner} from "../components/Spinner.jsx";
+import clsx from "clsx";
 
 // const tournaments = [
 //     {name: 'Big tournament', owner: "danil#4122", status: "active"},
@@ -37,26 +38,26 @@ import {Spinner} from "../components/Spinner.jsx";
 
 const Table = () => {
     const client = useQueryClient()
-    const [page, setPage] = useState(1)
-    const {data, isLoading, isError} = useQuery(['tournaments', page],
+    const [page, setPage] = useState(0)
+    const {data, isLoading, isError, isFetching} = useQuery(['tournaments', page],
         async () => (await api.get(`/tournaments/list/10/${page}`)).data)
     const onUpdate = () => {
         client.invalidateQueries(['tournaments'])
     }
     console.log(data)
     const prevPage = () => {
-        if (page > 1)
+        if (page > 0)
             setPage(page => page - 1)
     }
     const nextPage = () => {
-        if (data?.totalPages && page < data?.totalPages)
+        if (data?.totalPages && page < data?.totalPages - 1)
             setPage(page => page + 1)
     }
 
     return (
         <div
-            className={'mt-14 w-full p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
-            <div className={'flex justify-end gap-4'}>
+            className={'mt-14 w-full p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+            <div className={'flex justify-end items-center gap-4'}>
                 {
                     data?.totalTournaments ? (
                         <div>
@@ -75,18 +76,18 @@ const Table = () => {
                 </div>
 
                 <div className={'flex items-center rounded-lg'}>
-                    <button className={'p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
+                    <button onClick={prevPage} className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
                         <ChevronLeftIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
-                    <div className={'p-4 bg-gray-200 hover:bg-gray-300'}>
+                    <div className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300'}>
                         {page}
                     </div>
-                    <button className={'p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
+                    <button onClick={nextPage} className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
                         <ChevronRightIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
                 </div>
                 <PrimaryButton onClick={onUpdate}>
-                    <ArrowPathIcon className="animate-spin h-6 w-6 text-gray-500 stroke-2"/>
+                    <ArrowPathIcon className={clsx("h-4 md:h-6 w-4 md:w-6 text-gray-500 stroke-2", isLoading || isFetching ? "animate-spin" : null)}/>
                 </PrimaryButton>
             </div>
             <div className={'mt-4 flex flex-col gap-4'}>
@@ -126,7 +127,7 @@ const Table = () => {
                                                 key={tournament.id}>
                                                 <ThTd>
                                                     <Link to={`/tournaments/${tournament.id}`}>
-                                                        {tournament.name}
+                                                        {tournament.title}
                                                     </Link>
                                                 </ThTd>
                                                 <Td>
@@ -166,7 +167,7 @@ export const Tournaments = () => {
         <App>
             <Header/>
             <Page>
-                <div className={'pt-[80px] pb-[150px] flex flex-col items-center'}>
+                <div className={'pt-[100px] md:pt-[200px] flex flex-col items-center'}>
 
                     <div className={'p-3'}>
                         <h1 className={'text-[44px] font-bold'}>

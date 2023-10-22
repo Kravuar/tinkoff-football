@@ -54,7 +54,7 @@ export const Header = ({}) => {
                               fill="black"/>
                     </svg>
                 </Link>
-                <ul className={'flex mx-9 gap-8 grow'}>
+                <ul className={'flex mx-3 md:mx-9 gap-2 md:gap-8 grow'}>
                     <li>
                         <Link to={'/'}>
                             <HomeIcon className="h-8 w-8 text-gray-500"/>
@@ -65,9 +65,9 @@ export const Header = ({}) => {
                             <ListBulletIcon className="h-8 w-8 text-gray-500"/>
                         </Link>
                     </li>
-                    <li>
-                        <TrophyIcon className="h-8 w-8 text-gray-500"/>
-                    </li>
+                    {/*<li>*/}
+                    {/*    <TrophyIcon className="h-8 w-8 text-gray-500"/>*/}
+                    {/*</li>*/}
                 </ul>
                 <div className={'flex gap-2'}>
                     <Link to={profileLink}>

@@ -47,7 +47,7 @@ export const Authorization = () => {
         <App>
             <Header/>
             <Page>
-                <div className={'max-w-[500px] mx-auto pt-[250px] pb-[300px]'}>
+                <div className={'max-w-[500px] mx-auto pt-[100px] md:pt-[200px]'}>
                     <div className={'p-8 rounded-3xl bg-white shadow-md'}>
                         <form className={'flex flex-col gap-8'} onSubmit={handleSubmit(onSubmit)}>
                             <h1 className={'font-bold text-3xl text-center'}>

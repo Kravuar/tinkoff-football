@@ -6,7 +6,7 @@ export const Button = forwardRef(function Button({className, ...props}, ref) {
         <button
             {...props}
             ref={ref}
-            className={clsx('transition-colors duration-500 p-4 rounded-lg flex items-center justify-center gap-2', className)}
+            className={clsx('transition-colors duration-500 p-3 md:p-4 rounded-lg flex items-center justify-center gap-2', className)}
         />
     )
 })
