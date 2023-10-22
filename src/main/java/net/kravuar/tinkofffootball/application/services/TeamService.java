@@ -11,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class TeamService {
 
     public void joinTeam(Long teamId, UserInfo userInfo) {
         var team = findOrElseThrow(teamId);
-        if (userInfo.getId() != team.getSecondPlayer().getId())
+        if (!Objects.equals(userInfo.getId(), team.getSecondPlayer().getId()))
             throw new AccessDeniedException("У вас нет приглашения в эту команду.");
         team.setSecondPlayerStatus(Team.SecondPlayerStatus.JOINED);
         teamRepo.save(team);
@@ -49,7 +50,7 @@ public class TeamService {
 
     public void disableTeam(Long teamId, UserInfo userInfo) {
         var team = findOrElseThrow(teamId);
-        if (userInfo.getId() != team.getCaptain().getId() || userInfo.getId() != team.getSecondPlayer().getId())
+        if (!Objects.equals(userInfo.getId(), team.getCaptain().getId()) || !Objects.equals(userInfo.getId(), team.getSecondPlayer().getId()))
             throw new AccessDeniedException("Это не ваша команда");
         team.setActive(false);
         teamRepo.save(team);
@@ -57,7 +58,7 @@ public class TeamService {
 
     public void deleteTeam(Long teamId, UserInfo userInfo) {
         var team = findOrElseThrow(teamId);
-        if (userInfo.getId() != team.getCaptain().getId())
+        if (!Objects.equals(userInfo.getId(), team.getCaptain().getId()))
             throw new AccessDeniedException("Это не ваша команда");
         teamRepo.delete(team);
     }

@@ -92,7 +92,7 @@ public class TournamentService {
         var team = teamService.findOrElseThrow(teamId);
         if (team.getSecondPlayerStatus() == Team.SecondPlayerStatus.INVITED)
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Комманда не сформирована.");
-        if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
+        if (!Objects.equals(team.getCaptain().getId(), userInfo.getId()) && !Objects.equals(team.getSecondPlayer().getId(), userInfo.getId()))
             throw new IllegalArgumentException("Нельзя присоединится к турниру. Вы не состоите в данной команде.");
         tournament.setParticipants(tournament.getParticipants() + 1);
         tournamentRepo.save(tournament);
@@ -104,7 +104,7 @@ public class TournamentService {
         var tournament = findOrElseThrow(tournamentId);
         var tournamentStatus = tournament.getStatus();
         var team = teamService.findOrElseThrow(teamId);
-        if (team.getCaptain().getId() != userInfo.getId() || team.getSecondPlayer().getId() != userInfo.getId())
+        if (!Objects.equals(team.getCaptain().getId(), userInfo.getId()) || !Objects.equals(team.getSecondPlayer().getId(), userInfo.getId()))
             throw new IllegalArgumentException("Нельзя выйти из турнира. Вы не состоите в данной команде.");
 
         var toDelete = new ParticipantId(tournament, team);
@@ -137,7 +137,7 @@ public class TournamentService {
 
     public void updateScore(Long matchId, ScoreUpdateFormDTO matchUpdate, UserInfo userInfo) {
         var match = matchService.findOrElseThrow(matchId);
-        if (match.getTournament().getOwner().getId() != userInfo.getId())
+        if (!Objects.equals(match.getTournament().getOwner().getId(), userInfo.getId()))
             throw new AccessDeniedException("Вы не владелец турнира.");
         match.setTeam1Score(matchUpdate.getTeam1Score());
         match.setTeam2Score(matchUpdate.getTeam2Score());
@@ -157,14 +157,14 @@ public class TournamentService {
 
     public void startTournament(Long tournamentId, UserInfo userInfo) {
         var tournament = findOrElseThrow(tournamentId);
-        if (tournament.getOwner().getId() != userInfo.getId())
+        if (!Objects.equals(tournament.getOwner().getId(), userInfo.getId()))
             throw new AccessDeniedException("Вы не владелец турнира.");
 
         var participants = tournamentParticipantsRepo.findAllByTournamentId(tournamentId);
         if (participants.size() < 2) {
             throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
         }
-        var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil(participants.size() / 2)).first());
+        var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil((double) participants.size() / 2)).first());
         for (var i = 0; i < participants.size(); i += 2) {
             var match = matches.get(i / 2);
             match.setTeam1(participants.get(i).getTeam());
