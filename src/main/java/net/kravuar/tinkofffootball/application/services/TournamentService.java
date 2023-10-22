@@ -22,6 +22,7 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.FluxSink;
 
@@ -31,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class TournamentService {
     private final Map<Long, SubscribableChannel> activeTournaments = new ConcurrentHashMap<>();
     private final ApplicationEventPublisher publisher;

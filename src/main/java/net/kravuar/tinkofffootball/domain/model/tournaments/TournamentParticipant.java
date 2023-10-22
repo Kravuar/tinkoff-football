@@ -20,7 +20,7 @@ public class TournamentParticipant {
 
     @Id
     @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Team team;
 
     public TournamentParticipant(Tournament tournament, Team team) {
