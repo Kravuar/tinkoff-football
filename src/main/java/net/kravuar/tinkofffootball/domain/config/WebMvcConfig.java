@@ -29,7 +29,6 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
 public class WebMvcConfig {
     private final WebProps webProps;
     private final JWTProps jwtProps;
