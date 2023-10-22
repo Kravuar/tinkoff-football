@@ -160,6 +160,10 @@ public class TournamentService {
             throw new IllegalArgumentException("Турнир не активен.");
         if (!Objects.equals(match.getTournament().getOwner().getId(), userInfo.getId()))
             throw new AccessDeniedException("Вы не владелец турнира.");
+        if (match.getTeam1() == null || match.getTeam2() == null)
+            throw new IllegalArgumentException("Матч ещё не начат.");
+        if (match.getTeam1Score() > match.getBestOf() / 2 || match.getTeam2Score() > match.getBestOf() / 2)
+            throw new IllegalArgumentException("Матч уже завершён.");
         match.setTeam1Score(matchUpdate.getTeam1Score());
         match.setTeam2Score(matchUpdate.getTeam2Score());
         long winner = -1;
