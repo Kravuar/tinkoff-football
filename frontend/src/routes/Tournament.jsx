@@ -2,7 +2,7 @@ import {Link, useParams} from "react-router-dom";
 import {App} from "../components/App.jsx";
 import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
-import {PrimaryButton} from "../components/Button.jsx";
+import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {Controller, useForm} from "react-hook-form";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {api} from "../api.js";
@@ -10,7 +10,7 @@ import Select from "react-select";
 import {useTeams} from "../queries.js";
 import {Spinner} from "../components/Spinner.jsx";
 import {Td, Th, ThTd, Tr} from "../components/table/Table.jsx";
-import {CalendarDaysIcon, PlayIcon, TrophyIcon} from "@heroicons/react/24/outline/index.js";
+import {useUser} from "../hooks/useUser.jsx";
 
 const tournament = {
     name: "Большой турнир", status: "opened"
@@ -43,6 +43,7 @@ const TeamSelect = ({...props}) => {
 }
 
 export const Tournament = () => {
+    const user = useUser(state => state.user)
     const {id} = useParams();
     const client = useQueryClient()
     const {control, handleSubmit} = useForm()
@@ -55,9 +56,15 @@ export const Tournament = () => {
     const {data: tournament, isLoading, isError} = useQuery(['tournament', id],
         async () => (await api.get(`/tournaments/${id}`)).data)
 
+    const startMutation = useMutation(['tournament', id],
+        () => api.post(`/tournaments/${id}/start`))
+
     const onJoin = (data) => {
         console.log(data)
         joinMutation.mutate(data.team.id)
+    }
+    const startTournament = () => {
+        startMutation.mutate()
     }
 
     return (<App>
@@ -91,12 +98,20 @@ export const Tournament = () => {
                                     Владелец: {tournament.owner.username}
                                 </div>
                             </div>
-                            <Link className={'mt-4'} to={`/tournaments/${id}/grid`}>
-                                <PrimaryButton>
-                                    Открыть сетку
-                                </PrimaryButton>
-                            </Link>
-
+                            <div className={'mt-4 flex gap-4'} >
+                                <Link to={`/tournaments/${id}/grid`}>
+                                    <PrimaryButton>
+                                        Открыть сетку
+                                    </PrimaryButton>
+                                </Link>
+                                {
+                                    tournament.owner.id === user.id ? (
+                                        <WhiteButton onClick={startTournament}>
+                                            Начать турнир
+                                        </WhiteButton>
+                                    ) : null
+                                }
+                            </div>
                             {/* список команд */}
                             <div className={'mt-16 w-full sm:w-[600px] p-3 md:p-8 bg-white rounded-2xl shadow-lg'}>
                                 <div className={''}>
