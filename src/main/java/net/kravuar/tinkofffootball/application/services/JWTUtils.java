@@ -43,6 +43,6 @@ public class JWTUtils {
         if (token != null && token.startsWith(jwtProps.getTokenPrefix())) {
             String trimmed = token.substring(jwtProps.getTokenPrefix().length());
             return verifier.verify(trimmed);
-        } else throw new JWTDecodeException("not-found");
+        } else throw new JWTDecodeException("Отсутствует JWT токен.");
     }
 }

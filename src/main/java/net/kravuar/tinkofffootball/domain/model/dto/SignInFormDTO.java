@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class SignInFormDTO {
     @NotBlank
-    @Size(min=5)
+    @Size(min=5, max=30)
     private String username;
     @NotBlank
     private String password;

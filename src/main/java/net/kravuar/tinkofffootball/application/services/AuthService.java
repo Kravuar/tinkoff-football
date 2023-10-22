@@ -37,7 +37,7 @@ public class AuthService {
     public LoggedUser singIn(SignInFormDTO signInForm) {
         var user = userService.findOrElseThrow(signInForm.getUsername());
         if (!passwordEncoder.matches(signInForm.getPassword(), user.getPassword()))
-            throw new BadCredentialsException("invalid-password");
+            throw new BadCredentialsException("Неправильный пароль");
 
         return getLoggedUser(new UserInfo(user.getId(), signInForm.getUsername()));
     }

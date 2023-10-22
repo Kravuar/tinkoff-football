@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpFormDTO {
     @NotBlank
-    @Size(min=5)
+    @Size(min=5, max=30)
     private String username;
     @NotBlank
     private String password;
