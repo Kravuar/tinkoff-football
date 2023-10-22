@@ -164,7 +164,7 @@ const Team = ({team}) => {
                                                title={'Отменить приглашение'}
                                                subtitle={'Вы уверены, что хотите отменить приглашение?'}>
                                         <XMarkIcon title={'Отменить'}
-                                            className="h-6 w-6 stroke-2 text-red-500"/>
+                                                   className="h-6 w-6 stroke-2 text-red-500"/>
                                     </TeamModal>
                                 ) : null
                             }
@@ -273,6 +273,80 @@ const Teams = () => {
     )
 }
 
+const Tournaments = () => {
+    const {data, isLoading, isError} = useQuery(['tournaments-my'],
+        async () => (await api.get('/tournaments/myHistory')).data)
+
+    return (
+        <div
+            className={'w-full mt-14 p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
+            <div className={'flex flex-col gap-4'}>
+                <h1 className={'text-2xl font-semibold'}>
+                    Ваши турниры
+                </h1>
+                {
+                    isError || isLoading ? (
+                        isLoading ? (
+                            <div className={'w-full flex justify-center items-center'}>
+                                <Spinner/>
+                            </div>
+                        ) : (
+                            <div>
+                                Ошибка загрузки ваших команд
+                            </div>
+                        )
+                    ) : (
+                        <div className="overflow-x-auto shadow-lg sm:rounded-2xl">
+                            <table className="w-full text-sm text-left text-gray-500">
+                                <thead
+                                    className="text-xs text-gray-700 uppercase bg-gray-50">
+                                <Tr>
+                                    <Th>Название турнира</Th>
+                                    <Th>Организатор</Th>
+                                    <Th>Статус</Th>
+                                </Tr>
+                                </thead>
+                                <tbody>
+                                {
+                                    data?.tournaments.map(tournament => {
+                                        return (
+                                            <Tr key={tournament.id}>
+                                                <ThTd>
+                                                    <Link to={`/tournaments/${tournament.id}`}>
+                                                        {tournament.title}
+                                                    </Link>
+                                                </ThTd>
+                                                <Td>
+                                                    {tournament.owner.username}
+                                                </Td>
+                                                <Td>
+                                                    {
+                                                        {
+                                                            PENDING: <CalendarDaysIcon title={'Открыт'}
+                                                                className={"h-6 w-6 text-gray-500 stroke-2"}/>,
+                                                            ACTIVE: <PlayIcon title={'Продолжается'}
+                                                                className={'h-6 w-6 text-green-500 stroke-2'}/>,
+                                                            FINISHED: <TrophyIcon title={'Завершен'}
+                                                                className={'h-6 w-6 text-primary stroke-2'}/>,
+                                                            CANCELED: <XMarkIcon title={'Отменен'}
+                                                                className={'h-6 w-6 text-primary stroke-2'}/>,
+                                                        }[tournament.status]
+                                                    }
+                                                </Td>
+                                            </Tr>
+                                        )
+                                    })
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    )
+                }
+            </div>
+        </div>
+    )
+}
+
 export const Profile = () => {
     const user = useUser(state => state.user)
     const {register, handleSubmit, watch, formState: {errors}} = useForm();
@@ -292,59 +366,7 @@ export const Profile = () => {
                     </div>
 
                     <Teams/>
-
-                    <div
-                        className={'w-full mt-14 p-3 md:p-8 border-t-gray-600 border-t-[5px] bg-white mx-auto rounded-3xl shadow-2xl'}>
-                        <div className={'flex flex-col gap-4'}>
-                            <h1 className={'text-2xl font-semibold'}>
-                                Ваши турниры
-                            </h1>
-                            <div className="overflow-x-auto shadow-lg sm:rounded-2xl">
-                                <table className="w-full text-sm text-left text-gray-500">
-                                    <thead
-                                        className="text-xs text-gray-700 uppercase bg-gray-50">
-                                    <Tr>
-                                        <Th>Название турнира</Th>
-                                        <Th>Организатор</Th>
-                                        <Th>Статус</Th>
-                                        <Th></Th>
-                                    </Tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        tournaments.map(tournament => {
-                                            return (
-                                                <Tr key={tournament.id}>
-                                                    <ThTd>
-                                                        <Link to={`/tournaments/${tournament.id}`}>
-                                                            {tournament.name}
-                                                        </Link>
-                                                    </ThTd>
-                                                    <Td>
-                                                        {tournament.owner}
-                                                    </Td>
-                                                    <Td>
-                                                        {
-                                                            {
-                                                                opened: <CalendarDaysIcon
-                                                                    className={"h-6 w-6 text-gray-500 stroke-2"}/>,
-                                                                active: <PlayIcon
-                                                                    className={'h-6 w-6 text-green-500 stroke-2'}/>,
-                                                                finished: <TrophyIcon
-                                                                    className={'h-6 w-6 text-primary stroke-2'}/>
-                                                            }[tournament.status]
-                                                        }
-                                                    </Td>
-                                                </Tr>
-                                            )
-                                        })
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-                    </div>
+                    <Tournaments/>
                 </div>
             </Page>
         </App>

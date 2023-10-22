@@ -1,7 +1,7 @@
 import {App} from "../components/App.jsx";
 import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
-import {PlayIcon} from "@heroicons/react/24/outline/index.js";
+import {PlayIcon, XMarkIcon} from "@heroicons/react/24/outline/index.js";
 import {
     ArrowPathIcon,
     CalendarDaysIcon,
@@ -131,17 +131,19 @@ const Table = () => {
                                                     </Link>
                                                 </ThTd>
                                                 <Td>
-                                                    {tournament.owner.name}
+                                                    {tournament.owner.username}
                                                 </Td>
                                                 <Td>
                                                     {
                                                         {
-                                                            opened: <CalendarDaysIcon
-                                                                className={"h-6 w-6 text-gray-500 stroke-2"}/>,
-                                                            active: <PlayIcon
-                                                                className={'h-6 w-6 text-green-500 stroke-2'}/>,
-                                                            finished: <TrophyIcon
-                                                                className={'h-6 w-6 text-primary stroke-2'}/>
+                                                            PENDING: <CalendarDaysIcon title={'Открыт'}
+                                                                                       className={"h-6 w-6 text-gray-500 stroke-2"}/>,
+                                                            ACTIVE: <PlayIcon title={'Продолжается'}
+                                                                              className={'h-6 w-6 text-green-500 stroke-2'}/>,
+                                                            FINISHED: <TrophyIcon title={'Завершен'}
+                                                                                  className={'h-6 w-6 text-primary stroke-2'}/>,
+                                                            CANCELED: <XMarkIcon title={'Отменен'}
+                                                                                 className={'h-6 w-6 text-primary stroke-2'}/>,
                                                         }[tournament.status]
                                                     }
                                                 </Td>
