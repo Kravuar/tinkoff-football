@@ -37,7 +37,7 @@ import {Spinner} from "../components/Spinner.jsx";
 
 const Table = () => {
     const client = useQueryClient()
-    const [page, setPage] = useState(1)
+    const [page, setPage] = useState(0)
     const {data, isLoading, isError} = useQuery(['tournaments', page],
         async () => (await api.get(`/tournaments/list/10/${page}`)).data)
     const onUpdate = () => {
@@ -45,11 +45,11 @@ const Table = () => {
     }
     console.log(data)
     const prevPage = () => {
-        if (page > 1)
+        if (page > 0)
             setPage(page => page - 1)
     }
     const nextPage = () => {
-        if (data?.totalPages && page < data?.totalPages)
+        if (data?.totalPages && page < data?.totalPages - 1)
             setPage(page => page + 1)
     }
 
@@ -75,13 +75,13 @@ const Table = () => {
                 </div>
 
                 <div className={'flex items-center rounded-lg'}>
-                    <button className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
+                    <button onClick={prevPage} className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-s-lg'}>
                         <ChevronLeftIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
                     <div className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300'}>
                         {page}
                     </div>
-                    <button className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
+                    <button onClick={nextPage} className={'p-2 md:p-4 bg-gray-200 hover:bg-gray-300 rounded-e-lg'}>
                         <ChevronRightIcon className={'h-6 w-6 text-gray-900'}/>
                     </button>
                 </div>
@@ -126,7 +126,7 @@ const Table = () => {
                                                 key={tournament.id}>
                                                 <ThTd>
                                                     <Link to={`/tournaments/${tournament.id}`}>
-                                                        {tournament.name}
+                                                        {tournament.title}
                                                     </Link>
                                                 </ThTd>
                                                 <Td>
