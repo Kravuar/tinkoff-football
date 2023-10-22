@@ -8,6 +8,9 @@ import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {ArrowPathIcon} from "@heroicons/react/24/outline/index.js";
 import {ActionsContainer, Modal, Title} from "../components/modal/Modal.jsx";
 import {Input} from "../components/Input.jsx";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {api} from "../api.js";
+import {useForm} from "react-hook-form";
 
 
 const nodes = [
@@ -42,7 +45,6 @@ const nodes = [
 ]
 
 
-
 const Player = ({children}) => {
     return (
         <div className={'ps-2 pe-1 flex justify-between text-gray-900 bg-gray-normal'}>
@@ -74,14 +76,22 @@ const Column = forwardRef(function Column({className, count, style, ...props}, r
     )
 })
 
-const Node = ({node, nodeCb}) => {
+const Node = ({tournament_id, node, nodeCb}) => {
+    const client = useQueryClient()
     const [open, setOpen] = useState(false)
+    const updateMutation = useMutation(['tournament-grid', tournament_id],
+        (scores) => api.post(`/tournaments/updateScore/${node.id}`, scores), {
+            onSettled: () => {
+                client.invalidateQueries(['tournament-grid', tournament_id])
+            }
+        })
+    const {register, handleSubmit} = useForm()
     const onClose = (e) => {
         setOpen(false)
     }
-    const onSubmit = e => {
-        e.preventDefault()
+    const onSubmit = data => {
         onClose()
+        updateMutation.mutate(data)
     }
     return (
         <Brick.Root onClick={() => setOpen(true)} key={node.id} ref={(el) => nodeCb(node, el)}>
@@ -109,18 +119,20 @@ const Node = ({node, nodeCb}) => {
                 <Title>
                     Результаты матча
                 </Title>
-                <div className={'mt-4 flex flex-col gap-4'}>
-                    <Input placeholder={'Счет 1 команды'}/>
-                    <Input placeholder={'Счет 2 команды'}/>
-                </div>
-                <ActionsContainer>
-                    <WhiteButton type={'button'} onClick={onClose}>
-                        Отмена
-                    </WhiteButton>
-                    <PrimaryButton onClick={onSubmit}>
-                        Сохранить
-                    </PrimaryButton>
-                </ActionsContainer>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className={'mt-4 flex flex-col gap-4'}>
+                        <Input placeholder={'Счет 1 команды'} {...register('team1Score')}/>
+                        <Input placeholder={'Счет 2 команды'} {...register('team2Score')}/>
+                    </div>
+                    <ActionsContainer>
+                        <WhiteButton type={'button'} onClick={onClose}>
+                            Отмена
+                        </WhiteButton>
+                        <PrimaryButton type={'submit'}>
+                            Сохранить
+                        </PrimaryButton>
+                    </ActionsContainer>
+                </form>
             </Modal>
         </Brick.Root>
     )
@@ -128,6 +140,10 @@ const Node = ({node, nodeCb}) => {
 
 export const TournamentGrid = () => {
     const {id} = useParams()
+
+    const {data, isLoading, isError} = useQuery(['tournament-grid', id],
+        async () => (await api.get(`/tournaments/${id}/bracket`)).data)
+    console.log(data)
 
 
     const nodesRef = useRef(new Map())
@@ -194,7 +210,7 @@ export const TournamentGrid = () => {
                                             <Column key={col.name} count={count}>
                                                 {
                                                     col.elements.map(node => {
-                                                        return <Node key={node.id} node={node} nodeCb={nodeCb}/>
+                                                        return <Node tournament_id={id} key={node.id} node={node} nodeCb={nodeCb}/>
                                                     })
                                                 }
                                             </Column>
