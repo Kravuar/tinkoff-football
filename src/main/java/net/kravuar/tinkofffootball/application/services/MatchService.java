@@ -34,6 +34,10 @@ public class MatchService {
                 );
     }
 
+    public void saveAll(Iterable<Match> matches) {
+        matchRepo.saveAll(matches);
+    }
+
     public void advanceWinner(long tournamentId, int bracketPosition, long winner) {
         var newBracketPosition = (bracketPosition - 1) / 2;
         if (newBracketPosition < 0)
