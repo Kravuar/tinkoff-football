@@ -1,21 +1,13 @@
 import {useEffect, useRef, useState} from "react";
 
-
 function f() {
-    new EventSource()
-}
-
-class EventsManager {
-    sources
-
-    constructor() {
-        this.sources = []
+    const source = new EventSource('/api/tournaments/1/bracket/subscribe')
+    source.onmessage = ev => {
+        console.log(ev.data)
     }
-
-    connect(url) {
-
-    }
-
+    source.addEventListener('score-update', ev => {
+        console.log('score-update', ev.data)
+    })
 }
 
 const useEvents = (url) => {

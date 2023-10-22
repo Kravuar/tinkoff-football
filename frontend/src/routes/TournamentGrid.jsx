@@ -2,7 +2,7 @@ import {App} from "../components/App.jsx";
 import {Header} from "../components/Header.jsx";
 import {Page} from "../components/Page.jsx";
 import {useParams} from "react-router-dom";
-import {forwardRef, useLayoutEffect, useMemo, useRef, useState} from "react";
+import {forwardRef, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import clsx from "clsx";
 import {PrimaryButton, WhiteButton} from "../components/Button.jsx";
 import {ArrowPathIcon} from "@heroicons/react/24/outline/index.js";
@@ -136,9 +136,20 @@ const Node = ({tournament_id, node, nodeCb}) => {
 }
 
 export const TournamentGrid = () => {
+    const client = useQueryClient()
     const {id} = useParams()
 
-    const client = useQueryClient()
+    useEffect(() => {
+        const source = new EventSource(`/api/tournaments/${id}/bracket/subscribe`)
+        source.addEventListener('score-update', ev => {
+            console.log('score-update', ev.data)
+            client.invalidateQueries(['tournament-grid', id])
+        })
+        return () => {
+            source.close()
+        }
+    }, [id])
+
     const {data, isLoading, isFetching, isError} = useQuery(['tournament-grid', id],
         async () => (await api.get(`/tournaments/${id}/bracket`)).data)
 
