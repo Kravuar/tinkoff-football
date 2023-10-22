@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.kravuar.tinkofffootball.domain.model.user.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,10 +28,10 @@ public class Team {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     private User captain;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     private User secondPlayer;
 
     @Column(nullable = false)
@@ -40,5 +42,5 @@ public class Team {
     private SecondPlayerStatus secondPlayerStatus = SecondPlayerStatus.INVITED;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private Set<TournamentParticipant> tournamentParticipants;
+    private List<TournamentParticipant> tournamentParticipants = new ArrayList<>();
 }

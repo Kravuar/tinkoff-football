@@ -1,16 +1,11 @@
 package net.kravuar.tinkofffootball.domain.model.tournaments;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.kravuar.tinkofffootball.domain.model.dto.TournamentFormDTO;
 import net.kravuar.tinkofffootball.domain.model.user.User;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
