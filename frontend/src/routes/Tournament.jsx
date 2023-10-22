@@ -57,7 +57,11 @@ export const Tournament = () => {
         async () => (await api.get(`/tournaments/${id}`)).data)
 
     const startMutation = useMutation(['tournament', id],
-        () => api.post(`/tournaments/${id}/start`))
+        () => api.post(`/tournaments/${id}/start`), {
+            onSettled: () => {
+                client.invalidateQueries(['tournament', id])
+            }
+        })
 
     const onJoin = (data) => {
         console.log(data)

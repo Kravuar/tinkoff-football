@@ -13,7 +13,11 @@ export const TournamentCreate = () => {
     const client = useQueryClient()
     const navigate = useNavigate()
     const mutation = useMutation(['tournaments'],
-        (data) => api.post("/tournaments/create", data))
+        (data) => api.post("/tournaments/create", data), {
+            onSettled: () => {
+                client.invalidateQueries(['tournaments'])
+            }
+        })
 
     const {register, handleSubmit} = useForm()
     const onSubmit = (data) => {
@@ -27,7 +31,6 @@ export const TournamentCreate = () => {
             })),
         }
         mutation.mutateAsync(withMatches).then(() => {
-            client.invalidateQueries(['tournaments'])
             navigate('/tournaments')
         })
     }
