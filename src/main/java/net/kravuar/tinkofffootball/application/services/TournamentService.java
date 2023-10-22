@@ -164,15 +164,20 @@ public class TournamentService {
             throw new AccessDeniedException("Вы не владелец турнира.");
 
         var participants = tournamentParticipantsRepo.findAllByTournamentId(tournamentId);
-        if (participants.size() < 2) {
+        var participantsCount = participants.size();
+        if (participantsCount % 2 == 1)
+            participants.add(new TournamentParticipant()); // last match second team
+
+        if (participantsCount < 2) {
             throw new IllegalArgumentException("Недостаточно команд для старта турнира.");
         }
-        var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil((double) participants.size() / 2)).first());
-        for (var i = 0; i < participants.size(); i += 2) {
+        var matches = matchService.getFirstMatches(tournamentId, Pageable.ofSize((int) Math.ceil((double) participantsCount / 2)).first());
+        for (var i = 0; i < participantsCount; i += 2) {
             var match = matches.get(i / 2);
             match.setTeam1(participants.get(i).getTeam());
             match.setTeam2(participants.get(i + 1).getTeam());
         }
+
         matchService.saveAll(matches);
         activeTournaments.put(tournamentId, MessageChannels.publishSubscribe().getObject());
 

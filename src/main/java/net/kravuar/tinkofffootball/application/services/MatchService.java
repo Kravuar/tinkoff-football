@@ -42,9 +42,9 @@ public class MatchService {
         var newBracketPosition = (bracketPosition - 1) / 2;
         if (newBracketPosition < 0)
             throw new IllegalArgumentException("Нельзя продвинуться дальше финала.");
-        var newMatch = matchRepo.findMatchByTournamentIdAndBracketPosition(tournamentId, bracketPosition)
+        var newMatch = matchRepo.findMatchByTournamentIdAndBracketPosition(tournamentId, newBracketPosition)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("match", "bracketPosition", bracketPosition)
+                        () -> new ResourceNotFoundException("match", "bracketPosition", newBracketPosition)
                 );
         if (newMatch.getTeam1() == null)
             newMatch.setTeam1(teamService.getReference(winner));
