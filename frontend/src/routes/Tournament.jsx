@@ -62,13 +62,21 @@ export const Tournament = () => {
                 client.invalidateQueries(['tournament', id])
             }
         })
-
+    const stopMutation = useMutation(['tournament', id],
+        () => api.post(`/tournaments/${id}/cancel`), {
+            onSettled: () => {
+                client.invalidateQueries(['tournament', id])
+            }
+        })
     const onJoin = (data) => {
         console.log(data)
         joinMutation.mutate(data.team.id)
     }
     const startTournament = () => {
         startMutation.mutate()
+    }
+    const stopTournament = () => {
+        stopMutation.mutate()
     }
 
     return (<App>
@@ -102,49 +110,69 @@ export const Tournament = () => {
                                     Владелец: {tournament.owner.username}
                                 </div>
                             </div>
-                            <div className={'mt-4 flex gap-4'} >
-                                <Link to={`/tournaments/${id}/grid`}>
-                                    <PrimaryButton>
-                                        Открыть сетку
-                                    </PrimaryButton>
-                                </Link>
+                            <div className={'mt-4 flex gap-4'}>
                                 {
-                                    tournament.owner.id === user.id ? (
+                                    tournament.status === 'ACTIVE' ? (
+                                        <Link to={`/tournaments/${id}/grid`}>
+                                            <PrimaryButton>
+                                                Открыть сетку
+                                            </PrimaryButton>
+                                        </Link>
+                                    ) : null
+                                }
+                                {
+                                    tournament.status === 'PENDING' && tournament.owner.id === user.id ? (
                                         <WhiteButton onClick={startTournament}>
                                             Начать турнир
                                         </WhiteButton>
                                     ) : null
                                 }
+                                {
+                                    tournament.status === 'ACTIVE' && tournament.owner.id === user.id ? (
+                                        <WhiteButton onClick={stopTournament}>
+                                            Закончить турнир
+                                        </WhiteButton>
+                                    ) : null
+                                }
                             </div>
                             {/* список команд */}
-                            <div className={'mt-16 w-full sm:w-[600px] p-3 md:p-8 bg-white rounded-2xl shadow-lg'}>
+                            <div className={'mt-16 w-full p-3 md:p-8 bg-white rounded-2xl shadow-lg'}>
                                 <div className={''}>
                                     Участников: {tournament.participants.length}/{tournament.maxParticipants}
                                 </div>
-                                <form className={'w-full flex gap-1 items-center'}
-                                      onSubmit={handleSubmit(onJoin)}>
-                                    {/*  выбор команды  */}
-                                    <div className={'w-full'}>
-                                        <Controller rules={{required: true}} control={control} name={'team'}
-                                                    defaultValue={null}
-                                                    render={({field}) => (
-                                                        <TeamSelect value={field.value}
-                                                                    onChange={val => field.onChange(val)}/>
-                                                    )}
-                                        />
-                                    </div>
-                                    <PrimaryButton>
-                                        {
-                                            joinMutation.isLoading ? (
-                                                <Spinner/>
-                                            ) : (
-                                                <div>
-                                                    Участвовать
-                                                </div>
+                                {
+                                    tournament.participants.find(p => p.captain.id === user.id || p.secondPlayer.id === user.id) !== null ? (
+                                        <div className={'mt-2'}>
+                                            Вы уже участвуете
+                                        </div>
+                                    ) : (
+                                        <form className={'w-full flex gap-1 items-center'}
+                                              onSubmit={handleSubmit(onJoin)}>
+                                            {/*  выбор команды  */}
+                                            <div className={'w-full'}>
+                                                <Controller rules={{required: true}} control={control} name={'team'}
+                                                            defaultValue={null}
+                                                            render={({field}) => (
+                                                                <TeamSelect value={field.value}
+                                                                            onChange={val => field.onChange(val)}/>
+                                                            )}
+                                                />
+                                            </div>
+                                            <PrimaryButton>
+                                                {
+                                                    joinMutation.isLoading ? (
+                                                        <Spinner/>
+                                                    ) : (
+                                                        <div>
+                                                            Участвовать
+                                                        </div>
+                                                    )
+                                                }
+                                            </PrimaryButton>
                                             )
-                                        }
-                                    </PrimaryButton>
-                                </form>
+                                        </form>
+                                    )
+                                }
                                 {
                                     tournament?.participants.length > 0 ? (
                                         <div className={'mt-4 flex flex-col gap-4'}>
