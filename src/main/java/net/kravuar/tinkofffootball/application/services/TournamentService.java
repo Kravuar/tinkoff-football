@@ -171,8 +171,9 @@ public class TournamentService {
         for (var i = 0; i < participants.size(); i += 2) {
             var match = matches.get(i / 2);
             match.setTeam1(participants.get(i).getTeam());
-            match.setTeam1(participants.get(i + 1).getTeam());
+            match.setTeam2(participants.get(i + 1).getTeam());
         }
+        matchService.saveAll(matches);
         activeTournaments.put(tournamentId, MessageChannels.publishSubscribe().getObject());
 
         var lastMatch = matches.get(matches.size() - 1);
